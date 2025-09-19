@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Supprimer un utilisateur</title>
+    <style>
+        body { font-family: Arial, sans-serif; background: #fafafa; padding: 20px; }
+        ul { max-width: 400px; margin: auto; padding: 0; list-style-type: none; }
+        li { background: white; border: 1px solid #ddd; padding: 10px; margin-bottom: 5px; border-radius: 4px; }
+        a { color: #d9534f; text-decoration: none; font-weight: bold; }
+        a:hover { text-decoration: underline; }
+        h2 { text-align: center; color: #d9534f; }
+    </style>
+</head>
+<body>
+    <h2>Supprimer un utilisateur</h2>
+    <ul>
+        {% for user in users %}
+        <li>
+            {{ user.fullname }} ({{ user.studylevel }}, {{ user.age }})
+            - <a href="/users/delete/{{ user.uuid }}">Supprimer</a>
+        </li>
+        {% endfor %}
+    </ul>
+    <div style="text-align:center;">
+        <a href="/users">Retour à la liste</a>
+    </div>
+</body>
+</html>

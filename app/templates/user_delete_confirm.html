@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Supprimer utilisateur</title>
+    <style>
+        body { font-family: Arial, sans-serif; background-color:#f4f4f4; padding: 20px; }
+        .container { max-width: 400px; margin: auto; background: white; padding: 20px; border-radius: 5px; box-shadow: 0 0 8px #ccc; }
+        h1 { color: #d9534f; }
+        button { background-color: #d9534f; color: white; border: none; padding: 10px 15px; cursor: pointer; border-radius: 3px; }
+        a { text-decoration: none; color: #5bc0de; }
+    </style>
+</head>
+<body>
+<div class="container">
+    <h1>Supprimer utilisateur</h1>
+    <p>Confirmez-vous la suppression de l'utilisateur <strong>{{ user.fullname }}</strong> ?</p>
+    <form method="post">
+        <button type="submit">Oui, supprimer</button>
+        <a href="/users">Annuler</a>
+    </form>
+</div>
+</body>
+</html>

@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Modifier utilisateur</title>
+    <style>
+        body { font-family: Arial, sans-serif; background-color:#f4f4f4; padding: 20px; }
+        .container { max-width: 400px; margin: auto; background: white; padding: 20px; border-radius: 5px; box-shadow: 0 0 8px #ccc; }
+        label { display:block; margin-top: 10px; font-weight:bold; }
+        input[type="text"], input[type="number"] {
+            width: 100%; padding: 8px; margin-top: 5px; border: 1px solid #ccc; border-radius: 3px;
+        }
+        button { background-color: #5cb85c; color: white; border: none; padding: 10px 15px; cursor: pointer; margin-top: 15px; border-radius: 3px; }
+        a { text-decoration: none; color: #5bc0de; margin-left: 10px; }
+    </style>
+</head>
+<body>
+<div class="container">
+    <h1>Modifier utilisateur</h1>
+    <form method="post" action="{{ form_action }}">
+        <label for="fullname">Nom complet</label>
+        <input type="text" id="fullname" name="fullname" value="{{ user.fullname }}" required>
+        <label for="studylevel">Niveau d'étude</label>
+        <input type="text" id="studylevel" name="studylevel" value="{{ user.studylevel }}" required>
+        <label for="age">Âge</label>
+        <input type="number" id="age" name="age" value="{{ user.age }}" min="0" required>
+        <button type="submit">Enregistrer</button>
+        <a href="/users">Annuler</a>
+    </form>
+</div>
+</body>
+</html>

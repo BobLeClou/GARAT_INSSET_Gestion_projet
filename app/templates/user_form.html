@@ -1,0 +1,14 @@
+<!DOCTYPE html>
+<html>
+<head><title>Ajouter un utilisateur</title></head>
+<body>
+<h2>Nouvel utilisateur</h2>
+<form method="post" action="{{ form_action }}">
+  <label>Nom complet: <input type="text" name="fullname" required></label><br>
+  <label>Niveau d'étude: <input type="text" name="studylevel" required></label><br>
+  <label>Âge: <input type="number" name="age" required></label><br>
+  <button type="submit">Ajouter</button>
+</form>
+<a href="/users">Retour à la liste</a>
+</body>
+</html>

@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html>
+<head><title>Utilisateurs</title></head>
+<body>
+<h2>Liste des utilisateurs</h2>
+<ul>
+  {% for user in users %}
+    <li>
+      {{ user.fullname }} ({{ user.studylevel }}, {{ user.age }})
+      [ <a href="/users/edit/{{ user.uuid }}">modifier</a> | <a href="/users/delete/{{ user.uuid }}">supprimer</a> ]
+    </li>
+  {% endfor %}
+</ul>
+<a href="/users/new">Ajouter un utilisateur</a> |
+<a href="/users/delete">Supprimer un utilisateur</a> |
+<a href="/users/edit">Modifier un utilisateur</a>
+</body>
+</html>
