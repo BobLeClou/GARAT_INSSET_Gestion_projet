@@ -41,6 +41,12 @@ def get_db():
         yield db
     finally:
         db.close()
+from fastapi import Response
+
+@app.post("/log-error")
+def log_error():
+    logger.error("Bouton de génération de log ERROR déclenché")
+    return Response(content="Log ERROR généré", media_type="text/plain")
 
 @app.get("/users", response_class=HTMLResponse)
 def list_users(request: Request, db: Session = Depends(get_db)):

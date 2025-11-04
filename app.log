@@ -5,3 +5,265 @@
 2025-09-19 13:02:47,631 - INFO - 172.18.0.1 - POST /users/new - 303 - 9.09ms
 2025-09-19 13:02:47,655 - INFO - 172.18.0.1 connecté à /users
 2025-09-19 13:02:47,661 - INFO - 172.18.0.1 - GET /users - 200 - 6.95ms
+2025-11-04 10:45:12,731 - INFO - 172.18.0.1 connecté à /users
+2025-11-04 10:45:12,767 - INFO - 172.18.0.1 - GET /users - 200 - 37.49ms
+2025-11-04 10:45:12,900 - INFO - 172.18.0.1 - GET /favicon.ico - 404 - 0.29ms
+2025-11-04 11:08:43,621 - INFO - 172.18.0.1 connecté à /users/edit
+2025-11-04 11:08:43,653 - INFO - 172.18.0.1 - GET /users/edit - 200 - 34.57ms
+2025-11-04 11:12:03,359 - INFO - 172.18.0.1 connecté à /users/edit/82ef31cb-5cf4-4bcb-9965-692d219dd20c
+2025-11-04 11:12:03,392 - INFO - 172.18.0.1 - GET /users/edit/82ef31cb-5cf4-4bcb-9965-692d219dd20c - 200 - 35.92ms
+2025-11-04 11:12:07,171 - INFO - 172.18.0.1 - POST /users/edit/82ef31cb-5cf4-4bcb-9965-692d219dd20c - 303 - 17.35ms
+2025-11-04 11:12:07,194 - INFO - 172.18.0.1 connecté à /users
+2025-11-04 11:12:07,209 - INFO - 172.18.0.1 - GET /users - 200 - 16.08ms
+2025-11-04 11:22:31,919 - INFO - 172.18.0.1 connecté à /users/edit/82ef31cb-5cf4-4bcb-9965-692d219dd20c
+2025-11-04 11:22:31,937 - INFO - 172.18.0.1 - GET /users/edit/82ef31cb-5cf4-4bcb-9965-692d219dd20c - 200 - 19.68ms
+2025-11-04 11:22:33,609 - INFO - 172.18.0.1 connecté à /users
+2025-11-04 11:22:33,628 - INFO - 172.18.0.1 - GET /users - 200 - 19.68ms
+2025-11-04 11:27:25,188 - INFO - 172.18.0.1 connecté à /users/edit/82ef31cb-5cf4-4bcb-9965-692d219dd20c
+2025-11-04 11:27:25,208 - INFO - 172.18.0.1 - GET /users/edit/82ef31cb-5cf4-4bcb-9965-692d219dd20c - 200 - 22.40ms
+2025-11-04 11:27:50,156 - INFO - 172.18.0.1 connecté à /users
+2025-11-04 11:27:50,174 - INFO - 172.18.0.1 - GET /users - 200 - 19.46ms
+2025-11-04 11:27:51,063 - INFO - 172.18.0.1 connecté à /users/delete
+2025-11-04 11:27:51,089 - INFO - 172.18.0.1 - GET /users/delete - 200 - 27.10ms
+2025-11-04 11:27:52,128 - INFO - 172.18.0.1 connecté à /users
+2025-11-04 11:27:52,134 - INFO - 172.18.0.1 - GET /users - 200 - 7.04ms
+2025-11-04 11:29:01,650 - INFO - 172.18.0.1 connecté à /users/edit/82ef31cb-5cf4-4bcb-9965-692d219dd20c
+2025-11-04 11:29:01,657 - INFO - 172.18.0.1 - GET /users/edit/82ef31cb-5cf4-4bcb-9965-692d219dd20c - 200 - 9.03ms
+2025-11-04 11:31:56,952 - INFO - 172.18.0.1 connecté à /users/delete/f8a4dff6-d07f-4bee-9056-4c4243bdd8d5
+2025-11-04 11:31:56,977 - INFO - 172.18.0.1 - GET /users/delete/f8a4dff6-d07f-4bee-9056-4c4243bdd8d5 - 200 - 27.00ms
+2025-11-04 11:31:57,974 - INFO - 172.18.0.1 - POST /users/delete/f8a4dff6-d07f-4bee-9056-4c4243bdd8d5 - 303 - 9.01ms
+2025-11-04 11:31:57,990 - INFO - 172.18.0.1 connecté à /users
+2025-11-04 11:31:57,996 - INFO - 172.18.0.1 - GET /users - 200 - 6.61ms
+INFO - 172.18.0.1 connecté à /users/edit/82ef31cb-5cf4-4bcb-9965-692d219dd20c
+INFO - 172.18.0.1 - GET /users/edit/82ef31cb-5cf4-4bcb-9965-692d219dd20c - 200 - 20.12ms
+INFO - 172.18.0.1 connecté à /users/edit/cb91db40-b444-4e59-866d-8784a027d667
+INFO - 172.18.0.1 - GET /users/edit/cb91db40-b444-4e59-866d-8784a027d667 - 200 - 7.66ms
+INFO - 172.18.0.1 connecté à /users/edit/82ef31cb-5cf4-4bcb-9965-692d219dd20c
+INFO - 172.18.0.1 - GET /users/edit/82ef31cb-5cf4-4bcb-9965-692d219dd20c - 200 - 25.49ms
+INFO - 172.18.0.1 - POST /users/edit/82ef31cb-5cf4-4bcb-9965-692d219dd20c - 303 - 13.71ms
+INFO - 172.18.0.1 connecté à /users
+INFO - 172.18.0.1 - GET /users - 200 - 15.92ms
+INFO - 172.18.0.1 connecté à /users/edit/82ef31cb-5cf4-4bcb-9965-692d219dd20c
+INFO - 172.18.0.1 - GET /users/edit/82ef31cb-5cf4-4bcb-9965-692d219dd20c - 200 - 22.05ms
+INFO - 172.18.0.1 - POST /users/edit/82ef31cb-5cf4-4bcb-9965-692d219dd20c - 303 - 10.41ms
+INFO - 172.18.0.1 connecté à /users
+INFO - 172.18.0.1 - GET /users - 200 - 13.31ms
+INFO - 172.18.0.1 connecté à /users/edit/82ef31cb-5cf4-4bcb-9965-692d219dd20c
+INFO - 172.18.0.1 - GET /users/edit/82ef31cb-5cf4-4bcb-9965-692d219dd20c - 200 - 7.65ms
+INFO - 172.18.0.1 - POST /users/edit/82ef31cb-5cf4-4bcb-9965-692d219dd20c - 303 - 9.25ms
+INFO - 172.18.0.1 connecté à /users
+INFO - 172.18.0.1 - GET /users - 200 - 5.76ms
+INFO - 172.18.0.1 connecté à /users
+INFO - 172.18.0.1 - GET /users - 200 - 26.80ms
+INFO - 172.18.0.1 - GET /favicon.ico - 404 - 0.29ms
+INFO - 172.18.0.1 connecté à /users/edit/82ef31cb-5cf4-4bcb-9965-692d219dd20c
+INFO - 172.18.0.1 - GET /users/edit/82ef31cb-5cf4-4bcb-9965-692d219dd20c - 200 - 27.01ms
+INFO - 172.18.0.1 connecté à /users
+INFO - 172.18.0.1 - GET /users - 200 - 19.35ms
+INFO - 172.18.0.1 connecté à /users/edit/82ef31cb-5cf4-4bcb-9965-692d219dd20c
+INFO - 172.18.0.1 - GET /users/edit/82ef31cb-5cf4-4bcb-9965-692d219dd20c - 200 - 22.77ms
+INFO - 172.18.0.1 connecté à /users
+INFO - 172.18.0.1 - GET /users - 200 - 20.15ms
+INFO - 172.18.0.1 connecté à /users/edit/82ef31cb-5cf4-4bcb-9965-692d219dd20c
+INFO - 172.18.0.1 - GET /users/edit/82ef31cb-5cf4-4bcb-9965-692d219dd20c - 200 - 21.38ms
+INFO - 172.18.0.1 connecté à /users
+INFO - 172.18.0.1 - GET /users - 200 - 16.83ms
+2025-11-04 13:36:06,382 - INFO - 172.18.0.1 connecté à /users/edit/82ef31cb-5cf4-4bcb-9965-692d219dd20c
+2025-11-04 13:36:06,398 - INFO - 172.18.0.1 - GET /users/edit/82ef31cb-5cf4-4bcb-9965-692d219dd20c - 200 - 17.25ms
+2025-11-04 13:36:16,570 - INFO - 172.18.0.1 - POST /users/edit/82ef31cb-5cf4-4bcb-9965-692d219dd20c - 303 - 11.78ms
+2025-11-04 13:36:16,592 - INFO - 172.18.0.1 connecté à /users
+2025-11-04 13:36:16,608 - INFO - 172.18.0.1 - GET /users - 200 - 16.22ms
+2025-11-04 13:42:48,658 - INFO - 172.18.0.1 connecté à /users/edit/82ef31cb-5cf4-4bcb-9965-692d219dd20c
+2025-11-04 13:42:48,677 - INFO - 172.18.0.1 - GET /users/edit/82ef31cb-5cf4-4bcb-9965-692d219dd20c - 200 - 20.63ms
+2025-11-04 13:42:53,405 - INFO - 172.18.0.1 - POST /users/edit/82ef31cb-5cf4-4bcb-9965-692d219dd20c - 303 - 9.33ms
+2025-11-04 13:42:53,419 - INFO - 172.18.0.1 connecté à /users
+2025-11-04 13:42:53,431 - INFO - 172.18.0.1 - GET /users - 200 - 12.99ms
+2025-11-04 13:43:32,209 - INFO - 172.18.0.1 connecté à /users/edit/82ef31cb-5cf4-4bcb-9965-692d219dd20c
+2025-11-04 13:43:32,217 - INFO - 172.18.0.1 - GET /users/edit/82ef31cb-5cf4-4bcb-9965-692d219dd20c - 200 - 9.76ms
+2025-11-04 13:43:35,138 - INFO - 172.18.0.1 - POST /users/edit/82ef31cb-5cf4-4bcb-9965-692d219dd20c - 303 - 7.80ms
+2025-11-04 13:43:35,159 - INFO - 172.18.0.1 connecté à /users
+2025-11-04 13:43:35,164 - INFO - 172.18.0.1 - GET /users - 200 - 5.97ms
+2025-11-04 13:45:49,995 - INFO - 172.18.0.1 connecté à /users/new
+2025-11-04 13:45:50,014 - INFO - 172.18.0.1 - GET /users/new - 200 - 20.35ms
+2025-11-04 13:46:11,944 - INFO - 172.18.0.1 - POST /users/new - 303 - 8.13ms
+2025-11-04 13:46:11,963 - INFO - 172.18.0.1 connecté à /users
+2025-11-04 13:46:11,969 - INFO - 172.18.0.1 - GET /users - 200 - 6.63ms
+2025-11-04 14:02:20,842 - INFO - 172.18.0.1 connecté à /users/edit/82ef31cb-5cf4-4bcb-9965-692d219dd20c
+2025-11-04 14:02:20,861 - INFO - 172.18.0.1 - GET /users/edit/82ef31cb-5cf4-4bcb-9965-692d219dd20c - 200 - 21.20ms
+2025-11-04 14:09:47,639 - INFO - 172.18.0.1 connecté à /users
+2025-11-04 14:09:47,659 - INFO - 172.18.0.1 - GET /users - 200 - 22.91ms
+2025-11-04 14:15:02,434 - INFO - 172.18.0.1 connecté à /users
+2025-11-04 14:15:02,454 - INFO - 172.18.0.1 - GET /users - 200 - 21.89ms
+2025-11-04 14:15:03,437 - ERROR - Bouton de génération de log ERROR déclenché
+2025-11-04 14:15:03,438 - INFO - 172.18.0.1 - POST /log-error - 200 - 1.53ms
+2025-11-04 14:17:29,861 - ERROR - Bouton de génération de log ERROR déclenché
+2025-11-04 14:17:29,862 - INFO - 172.18.0.1 - POST /log-error - 200 - 1.56ms
+2025-11-04 14:25:43,740 - INFO - 172.18.0.1 connecté à /users
+2025-11-04 14:25:43,757 - INFO - 172.18.0.1 - GET /users - 200 - 18.85ms
+2025-11-04 14:25:44,970 - ERROR - Bouton de génération de log ERROR déclenché
+2025-11-04 14:25:44,975 - ERROR - Erreur serveur: string indices must be integers
+2025-11-04 14:26:47,042 - ERROR - Bouton de génération de log ERROR déclenché
+2025-11-04 14:26:47,063 - ERROR - Erreur serveur: string indices must be integers
+2025-11-04 14:26:49,418 - ERROR - Bouton de génération de log ERROR déclenché
+2025-11-04 14:26:49,424 - ERROR - Erreur serveur: string indices must be integers
+2025-11-04 14:27:15,075 - INFO - 172.18.0.1 connecté à /users
+2025-11-04 14:27:15,095 - INFO - 172.18.0.1 - GET /users - 200 - 21.40ms
+2025-11-04 14:27:15,953 - INFO - 172.18.0.1 connecté à /users
+2025-11-04 14:27:15,960 - INFO - 172.18.0.1 - GET /users - 200 - 8.15ms
+2025-11-04 14:27:16,390 - INFO - 172.18.0.1 connecté à /users
+2025-11-04 14:27:16,398 - INFO - 172.18.0.1 - GET /users - 200 - 8.74ms
+2025-11-04 14:27:16,884 - ERROR - Bouton de génération de log ERROR déclenché
+2025-11-04 14:27:16,885 - ERROR - Erreur serveur: Jinja2Templates.TemplateResponse() missing 1 required positional argument: 'context'
+2025-11-04 14:27:46,463 - ERROR - Bouton de génération de log ERROR déclenché
+2025-11-04 14:27:46,464 - INFO - 172.18.0.1 - POST /log-error - 200 - 2.48ms
+2025-11-04 14:27:48,746 - ERROR - Bouton de génération de log ERROR déclenché
+2025-11-04 14:27:48,747 - INFO - 172.18.0.1 - POST /log-error - 200 - 1.81ms
+2025-11-04 14:27:49,509 - ERROR - Bouton de génération de log ERROR déclenché
+2025-11-04 14:27:49,509 - INFO - 172.18.0.1 - POST /log-error - 200 - 1.41ms
+2025-11-04 14:27:50,213 - ERROR - Bouton de génération de log ERROR déclenché
+2025-11-04 14:27:50,214 - INFO - 172.18.0.1 - POST /log-error - 200 - 1.60ms
+2025-11-04 14:27:50,958 - ERROR - Bouton de génération de log ERROR déclenché
+2025-11-04 14:27:50,959 - INFO - 172.18.0.1 - POST /log-error - 200 - 1.43ms
+2025-11-04 14:27:51,697 - ERROR - Bouton de génération de log ERROR déclenché
+2025-11-04 14:27:51,698 - INFO - 172.18.0.1 - POST /log-error - 200 - 1.59ms
+2025-11-04 14:33:41,972 - ERROR - Bouton de génération de log ERROR déclenché
+2025-11-04 14:33:41,973 - INFO - 172.18.0.1 - POST /log-error - 200 - 1.58ms
+2025-11-04 14:33:42,702 - ERROR - Bouton de génération de log ERROR déclenché
+2025-11-04 14:33:42,703 - INFO - 172.18.0.1 - POST /log-error - 200 - 1.60ms
+2025-11-04 14:33:43,455 - ERROR - Bouton de génération de log ERROR déclenché
+2025-11-04 14:33:43,456 - INFO - 172.18.0.1 - POST /log-error - 200 - 1.77ms
+2025-11-04 14:33:44,184 - ERROR - Bouton de génération de log ERROR déclenché
+2025-11-04 14:33:44,185 - INFO - 172.18.0.1 - POST /log-error - 200 - 1.10ms
+2025-11-04 14:33:44,860 - ERROR - Bouton de génération de log ERROR déclenché
+2025-11-04 14:33:44,861 - INFO - 172.18.0.1 - POST /log-error - 200 - 1.83ms
+2025-11-04 14:34:32,085 - ERROR - Bouton de génération de log ERROR déclenché
+2025-11-04 14:34:32,086 - INFO - 172.18.0.1 - POST /log-error - 200 - 1.79ms
+2025-11-04 14:34:35,330 - ERROR - Bouton de génération de log ERROR déclenché
+2025-11-04 14:34:35,331 - INFO - 172.18.0.1 - POST /log-error - 200 - 1.98ms
+2025-11-04 14:34:39,305 - ERROR - Bouton de génération de log ERROR déclenché
+2025-11-04 14:34:39,306 - INFO - 172.18.0.1 - POST /log-error - 200 - 1.53ms
+2025-11-04 14:34:42,067 - ERROR - Bouton de génération de log ERROR déclenché
+2025-11-04 14:34:42,068 - INFO - 172.18.0.1 - POST /log-error - 200 - 1.58ms
+2025-11-04 14:34:45,363 - ERROR - Bouton de génération de log ERROR déclenché
+2025-11-04 14:34:45,364 - INFO - 172.18.0.1 - POST /log-error - 200 - 1.69ms
+2025-11-04 14:35:52,689 - ERROR - Bouton de génération de log ERROR déclenché
+2025-11-04 14:35:52,690 - INFO - 172.18.0.1 - POST /log-error - 200 - 1.76ms
+2025-11-04 14:35:53,235 - ERROR - Bouton de génération de log ERROR déclenché
+2025-11-04 14:35:53,236 - INFO - 172.18.0.1 - POST /log-error - 200 - 1.56ms
+2025-11-04 14:35:54,907 - ERROR - Bouton de génération de log ERROR déclenché
+2025-11-04 14:35:54,908 - INFO - 172.18.0.1 - POST /log-error - 200 - 1.52ms
+2025-11-04 14:35:56,451 - ERROR - Bouton de génération de log ERROR déclenché
+2025-11-04 14:35:56,452 - INFO - 172.18.0.1 - POST /log-error - 200 - 2.00ms
+2025-11-04 14:35:57,196 - ERROR - Bouton de génération de log ERROR déclenché
+2025-11-04 14:35:57,197 - INFO - 172.18.0.1 - POST /log-error - 200 - 1.29ms
+2025-11-04 14:35:57,952 - ERROR - Bouton de génération de log ERROR déclenché
+2025-11-04 14:35:57,953 - INFO - 172.18.0.1 - POST /log-error - 200 - 1.52ms
+2025-11-04 14:35:58,696 - ERROR - Bouton de génération de log ERROR déclenché
+2025-11-04 14:35:58,697 - INFO - 172.18.0.1 - POST /log-error - 200 - 1.60ms
+2025-11-04 14:40:23,707 - ERROR - Bouton de génération de log ERROR déclenché
+2025-11-04 14:40:23,709 - INFO - 172.18.0.1 - POST /log-error - 200 - 1.77ms
+2025-11-04 14:40:24,531 - ERROR - Bouton de génération de log ERROR déclenché
+2025-11-04 14:40:24,533 - INFO - 172.18.0.1 - POST /log-error - 200 - 1.54ms
+2025-11-04 14:40:25,289 - ERROR - Bouton de génération de log ERROR déclenché
+2025-11-04 14:40:25,290 - INFO - 172.18.0.1 - POST /log-error - 200 - 1.65ms
+2025-11-04 14:40:26,039 - ERROR - Bouton de génération de log ERROR déclenché
+2025-11-04 14:40:26,040 - INFO - 172.18.0.1 - POST /log-error - 200 - 1.41ms
+2025-11-04 14:40:26,763 - ERROR - Bouton de génération de log ERROR déclenché
+2025-11-04 14:40:26,764 - INFO - 172.18.0.1 - POST /log-error - 200 - 1.89ms
+2025-11-04 14:40:27,517 - ERROR - Bouton de génération de log ERROR déclenché
+2025-11-04 14:40:27,518 - INFO - 172.18.0.1 - POST /log-error - 200 - 1.43ms
+2025-11-04 14:40:28,256 - ERROR - Bouton de génération de log ERROR déclenché
+2025-11-04 14:40:28,257 - INFO - 172.18.0.1 - POST /log-error - 200 - 1.52ms
+2025-11-04 15:30:02,501 - INFO - 172.18.0.1 connecté à /users/edit/a6bbb7a3-cd05-4214-836b-7fa67567729d
+2025-11-04 15:30:02,566 - INFO - 172.18.0.1 - GET /users/edit/a6bbb7a3-cd05-4214-836b-7fa67567729d - 200 - 74.71ms
+2025-11-04 15:30:05,274 - INFO - 172.18.0.1 - POST /users/edit/a6bbb7a3-cd05-4214-836b-7fa67567729d - 303 - 23.03ms
+2025-11-04 15:30:05,296 - INFO - 172.18.0.1 connecté à /users
+2025-11-04 15:30:05,318 - INFO - 172.18.0.1 - GET /users - 200 - 23.42ms
+2025-11-04 16:10:38,962 - ERROR - Bouton de génération de log ERROR déclenché
+2025-11-04 16:10:38,968 - INFO - 172.18.0.1 - POST /log-error - 200 - 13.07ms
+2025-11-04 16:10:39,522 - ERROR - Bouton de génération de log ERROR déclenché
+2025-11-04 16:10:39,523 - INFO - 172.18.0.1 - POST /log-error - 200 - 1.87ms
+2025-11-04 16:10:40,462 - INFO - 172.18.0.1 connecté à /users/edit/a6bbb7a3-cd05-4214-836b-7fa67567729d
+2025-11-04 16:10:40,505 - INFO - 172.18.0.1 - GET /users/edit/a6bbb7a3-cd05-4214-836b-7fa67567729d - 200 - 49.95ms
+2025-11-04 16:10:41,848 - ERROR - Bouton de génération de log ERROR déclenché
+2025-11-04 16:10:41,850 - INFO - 172.18.0.1 - POST /log-error - 200 - 1.85ms
+2025-11-04 16:10:42,471 - ERROR - Bouton de génération de log ERROR déclenché
+2025-11-04 16:10:42,472 - INFO - 172.18.0.1 - POST /log-error - 200 - 1.60ms
+2025-11-04 16:10:43,049 - ERROR - Bouton de génération de log ERROR déclenché
+2025-11-04 16:10:43,050 - INFO - 172.18.0.1 - POST /log-error - 200 - 1.50ms
+2025-11-04 16:10:43,663 - ERROR - Bouton de génération de log ERROR déclenché
+2025-11-04 16:10:43,664 - INFO - 172.18.0.1 - POST /log-error - 200 - 1.77ms
+2025-11-04 16:10:44,324 - ERROR - Bouton de génération de log ERROR déclenché
+2025-11-04 16:10:44,325 - INFO - 172.18.0.1 - POST /log-error - 200 - 1.56ms
+2025-11-04 16:10:52,939 - ERROR - Bouton de génération de log ERROR déclenché
+2025-11-04 16:10:52,940 - INFO - 172.18.0.1 - POST /log-error - 200 - 1.41ms
+2025-11-04 16:10:53,515 - ERROR - Bouton de génération de log ERROR déclenché
+2025-11-04 16:10:53,516 - INFO - 172.18.0.1 - POST /log-error - 200 - 1.51ms
+2025-11-04 16:10:54,087 - ERROR - Bouton de génération de log ERROR déclenché
+2025-11-04 16:10:54,088 - INFO - 172.18.0.1 - POST /log-error - 200 - 1.64ms
+2025-11-04 16:13:25,057 - ERROR - Bouton de génération de log ERROR déclenché
+2025-11-04 16:13:25,058 - INFO - 172.18.0.1 - POST /log-error - 200 - 1.28ms
+2025-11-04 16:13:25,646 - ERROR - Bouton de génération de log ERROR déclenché
+2025-11-04 16:13:25,647 - INFO - 172.18.0.1 - POST /log-error - 200 - 1.74ms
+2025-11-04 16:13:26,297 - ERROR - Bouton de génération de log ERROR déclenché
+2025-11-04 16:13:26,298 - INFO - 172.18.0.1 - POST /log-error - 200 - 1.57ms
+2025-11-04 16:13:26,904 - ERROR - Bouton de génération de log ERROR déclenché
+2025-11-04 16:13:26,905 - INFO - 172.18.0.1 - POST /log-error - 200 - 1.78ms
+2025-11-04 16:13:27,513 - ERROR - Bouton de génération de log ERROR déclenché
+2025-11-04 16:13:27,514 - INFO - 172.18.0.1 - POST /log-error - 200 - 1.62ms
+2025-11-04 16:13:28,142 - ERROR - Bouton de génération de log ERROR déclenché
+2025-11-04 16:13:28,143 - INFO - 172.18.0.1 - POST /log-error - 200 - 1.77ms
+2025-11-04 16:13:28,738 - ERROR - Bouton de génération de log ERROR déclenché
+2025-11-04 16:13:28,738 - INFO - 172.18.0.1 - POST /log-error - 200 - 1.18ms
+2025-11-04 16:13:29,311 - ERROR - Bouton de génération de log ERROR déclenché
+2025-11-04 16:13:29,312 - INFO - 172.18.0.1 - POST /log-error - 200 - 1.99ms
+2025-11-04 16:14:07,659 - ERROR - Bouton de génération de log ERROR déclenché
+2025-11-04 16:14:07,660 - INFO - 172.18.0.1 - POST /log-error - 200 - 1.48ms
+2025-11-04 16:16:34,664 - ERROR - Bouton de génération de log ERROR déclenché
+2025-11-04 16:16:34,665 - INFO - 172.18.0.1 - POST /log-error - 200 - 2.18ms
+2025-11-04 16:16:35,359 - ERROR - Bouton de génération de log ERROR déclenché
+2025-11-04 16:16:35,360 - INFO - 172.18.0.1 - POST /log-error - 200 - 2.52ms
+2025-11-04 16:16:36,028 - ERROR - Bouton de génération de log ERROR déclenché
+2025-11-04 16:16:36,029 - INFO - 172.18.0.1 - POST /log-error - 200 - 1.35ms
+2025-11-04 16:16:36,702 - ERROR - Bouton de génération de log ERROR déclenché
+2025-11-04 16:16:36,703 - INFO - 172.18.0.1 - POST /log-error - 200 - 1.36ms
+2025-11-04 16:16:37,391 - ERROR - Bouton de génération de log ERROR déclenché
+2025-11-04 16:16:37,392 - INFO - 172.18.0.1 - POST /log-error - 200 - 1.29ms
+2025-11-04 16:16:38,099 - ERROR - Bouton de génération de log ERROR déclenché
+2025-11-04 16:16:38,100 - INFO - 172.18.0.1 - POST /log-error - 200 - 1.57ms
+2025-11-04 16:16:38,783 - ERROR - Bouton de génération de log ERROR déclenché
+2025-11-04 16:16:38,784 - INFO - 172.18.0.1 - POST /log-error - 200 - 1.65ms
+2025-11-04 16:16:39,519 - ERROR - Bouton de génération de log ERROR déclenché
+2025-11-04 16:16:39,521 - INFO - 172.18.0.1 - POST /log-error - 200 - 1.83ms
+2025-11-04 16:22:04,269 - INFO - 172.18.0.1 connecté à /users
+2025-11-04 16:22:04,278 - INFO - 172.18.0.1 - GET /users - 200 - 10.98ms
+2025-11-04 16:22:05,731 - ERROR - Bouton de génération de log ERROR déclenché
+2025-11-04 16:22:05,732 - INFO - 172.18.0.1 - POST /log-error - 200 - 1.92ms
+2025-11-04 16:22:06,669 - ERROR - Bouton de génération de log ERROR déclenché
+2025-11-04 16:22:06,670 - INFO - 172.18.0.1 - POST /log-error - 200 - 1.30ms
+2025-11-04 16:22:07,232 - ERROR - Bouton de génération de log ERROR déclenché
+2025-11-04 16:22:07,233 - INFO - 172.18.0.1 - POST /log-error - 200 - 1.55ms
+2025-11-04 16:22:08,549 - ERROR - Bouton de génération de log ERROR déclenché
+2025-11-04 16:22:08,551 - INFO - 172.18.0.1 - POST /log-error - 200 - 1.53ms
+2025-11-04 16:22:09,199 - ERROR - Bouton de génération de log ERROR déclenché
+2025-11-04 16:22:09,200 - INFO - 172.18.0.1 - POST /log-error - 200 - 1.69ms
+2025-11-04 16:22:09,817 - ERROR - Bouton de génération de log ERROR déclenché
+2025-11-04 16:22:09,818 - INFO - 172.18.0.1 - POST /log-error - 200 - 1.54ms
+2025-11-04 16:22:13,274 - ERROR - Bouton de génération de log ERROR déclenché
+2025-11-04 16:22:13,275 - INFO - 172.18.0.1 - POST /log-error - 200 - 1.76ms
+2025-11-04 16:22:13,927 - ERROR - Bouton de génération de log ERROR déclenché
+2025-11-04 16:22:13,928 - INFO - 172.18.0.1 - POST /log-error - 200 - 1.56ms
+2025-11-04 16:22:14,604 - ERROR - Bouton de génération de log ERROR déclenché
+2025-11-04 16:22:14,605 - INFO - 172.18.0.1 - POST /log-error - 200 - 1.49ms
+2025-11-04 16:22:15,234 - ERROR - Bouton de génération de log ERROR déclenché
+2025-11-04 16:22:15,235 - INFO - 172.18.0.1 - POST /log-error - 200 - 1.70ms
+2025-11-04 16:22:15,829 - ERROR - Bouton de génération de log ERROR déclenché
+2025-11-04 16:22:15,831 - INFO - 172.18.0.1 - POST /log-error - 200 - 1.66ms
+2025-11-04 16:22:16,519 - ERROR - Bouton de génération de log ERROR déclenché
+2025-11-04 16:22:16,521 - INFO - 172.18.0.1 - POST /log-error - 200 - 1.82ms
+2025-11-04 16:22:17,340 - ERROR - Bouton de génération de log ERROR déclenché
+2025-11-04 16:22:17,342 - INFO - 172.18.0.1 - POST /log-error - 200 - 1.62ms
+2025-11-04 16:22:18,067 - ERROR - Bouton de génération de log ERROR déclenché
+2025-11-04 16:22:18,068 - INFO - 172.18.0.1 - POST /log-error - 200 - 1.48ms
+2025-11-04 16:22:18,691 - ERROR - Bouton de génération de log ERROR déclenché
+2025-11-04 16:22:18,691 - INFO - 172.18.0.1 - POST /log-error - 200 - 1.70ms
