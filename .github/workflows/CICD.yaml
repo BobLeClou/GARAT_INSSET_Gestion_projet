@@ -1,0 +1,55 @@
+name: CI/CD - Build and Push Docker Image
+
+# Déclenche sur les tags de type vX.Y.Z (ex: v1.0.0)
+on:
+  push:
+    tags:
+      - 'v*'
+
+jobs:
+  build-and-push:
+    name: Build and push Docker image
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          # besoin d'historique complet pour lire les tags
+          fetch-depth: 0
+
+      - name: Extract version from tag
+        id: extract_version
+        run: |
+          # GITHUB_REF pour un push tag ressemble à refs/tags/1.0.0
+          TAG=${GITHUB_REF#refs/tags/}
+          # On prend la version telle quelle (ex: 1.0.0)
+          VERSION=$TAG
+          echo "TAG=$TAG" >> $GITHUB_ENV
+          echo "VERSION=$VERSION" >> $GITHUB_ENV
+
+      - name: Show extracted version
+        run: |
+          echo "Tag: $TAG"
+          echo "Version: $VERSION"
+
+      - name: Log in to Docker Hub
+        uses: docker/login-action@v2
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      - name: Build and push image
+        uses: docker/build-push-action@v4
+        with:
+          context: .
+          push: true
+          tags: |
+            ${{ secrets.DOCKERHUB_USERNAME }}/garat-api:${{ env.VERSION }}
+            ${{ secrets.DOCKERHUB_USERNAME }}/garat-api:latest
+
+      - name: Output image tags
+        run: |
+          echo "Pushed images:"
+          echo "${{ secrets.DOCKERHUB_USERNAME }}/garat-api:${{ env.VERSION }}"
+          echo "${{ secrets.DOCKERHUB_USERNAME }}/garat-api:latest"
