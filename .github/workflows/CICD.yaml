@@ -2,9 +2,7 @@ name: CI/CD - Build and Push Docker Image
 
 # Déclenche sur les tags de type vX.Y.Z (ex: v1.0.0)
 on:
-  push:
-    tags:
-      - 'v*'
+  workflow_dispatch:
 
 jobs:
   build-and-push:
