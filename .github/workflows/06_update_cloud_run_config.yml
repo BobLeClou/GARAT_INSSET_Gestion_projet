@@ -1,0 +1,49 @@
+name: Update Cloud Run config
+
+on:
+  workflow_call:
+    inputs:
+      version:
+        required: true
+      docker_user:
+        required: true
+      gcp_project:
+        required: true
+      gcp_region:
+        required: true
+      db_connection:
+        required: false
+      loki_url:
+        required: false
+
+jobs:
+  render:
+    runs-on: ubuntu-latest
+    outputs:
+      config-path: ${{ steps.render.outputs.path }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Prepare cloud-run-service.yaml
+        id: render
+        run: |
+          TEMPLATE=cloud-run-service.yaml.template
+          OUT=cloud-run-service.generated.yaml
+          if [ ! -f "$TEMPLATE" ]; then
+            if [ -f cloud-run-service.yaml ]; then
+              cp cloud-run-service.yaml "$OUT"
+            else
+              echo "No cloud-run-service template found; creating minimal placeholder" > "$OUT"
+              echo "service: garat-api" >> "$OUT"
+            fi
+          else
+            cp "$TEMPLATE" "$OUT"
+          fi
+          sed -i "s|\${{VERSION}}|${{ inputs.version }}|g" "$OUT" || true
+          sed -i "s|\${{DOCKER_USER}}|${{ inputs.docker_user }}|g" "$OUT" || true
+          sed -i "s|\${{GCP_PROJECT}}|${{ inputs.gcp_project }}|g" "$OUT" || true
+          sed -i "s|\${{GCP_REGION}}|${{ inputs.gcp_region }}|g" "$OUT" || true
+          sed -i "s|\${{DB_CONNECTION}}|${{ inputs.db_connection }}|g" "$OUT" || true
+          sed -i "s|\${{LOKI_URL}}|${{ inputs.loki_url }}|g" "$OUT" || true
+          echo "path=$OUT" >> "$GITHUB_OUTPUT"

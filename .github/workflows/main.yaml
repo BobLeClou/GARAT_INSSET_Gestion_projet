@@ -1,0 +1,85 @@
+name: CI/CD main orchestrator
+
+on:
+  push:
+    tags:
+      - '*'
+  workflow_dispatch:
+    inputs:
+      version:
+        required: false
+      gcp_project:
+        required: false
+      gcp_region:
+        required: false
+      db_connection:
+        required: false
+      loki_url:
+        required: false
+      allow_unauth:
+        required: false
+
+jobs:
+  checkout:
+    uses: ./.github/workflows/01_checkout_and_version.yml
+    with:
+      version: ${{ github.event.inputs.version }}
+
+  build-api:
+    needs: [checkout]
+    uses: ./.github/workflows/02_build_api.yml
+    with:
+      version: ${{ needs.checkout.outputs.version }}
+    secrets:
+      DOCKER_HUB_USERNAME: ${{ secrets.DOCKER_HUB_USERNAME }}
+      DOCKER_HUB_ACCESS_TOKEN: ${{ secrets.DOCKER_HUB_ACCESS_TOKEN }}
+
+  build-fluent:
+    needs: [checkout]
+    uses: ./.github/workflows/03_build_fluentbit.yml
+    with:
+      version: ${{ needs.checkout.outputs.version }}
+    secrets:
+      DOCKER_HUB_USERNAME: ${{ secrets.DOCKER_HUB_USERNAME }}
+      DOCKER_HUB_ACCESS_TOKEN: ${{ secrets.DOCKER_HUB_ACCESS_TOKEN }}
+
+  gcloud-setup:
+    needs: [checkout]
+    uses: ./.github/workflows/04_gcloud_setup.yml
+    with:
+      gcp_project: ${{ github.event.inputs.gcp_project }}
+      gcp_region: ${{ github.event.inputs.gcp_region }}
+    secrets:
+      GCP_SA_KEY: ${{ secrets.GCP_SA_KEY }}
+
+  run-migrations:
+    needs: [gcloud-setup, checkout]
+    uses: ./.github/workflows/05_run_migrations.yml
+    with:
+      version: ${{ needs.checkout.outputs.version }}
+      db_connection: ${{ github.event.inputs.db_connection }}
+    secrets:
+      GCP_SA_KEY: ${{ secrets.GCP_SA_KEY }}
+
+  update-config:
+    needs: [checkout]
+    uses: ./.github/workflows/06_update_cloud_run_config.yml
+    with:
+      version: ${{ needs.checkout.outputs.version }}
+      docker_user: ${{ secrets.DOCKER_HUB_USERNAME }}
+      gcp_project: ${{ github.event.inputs.gcp_project }}
+      gcp_region: ${{ github.event.inputs.gcp_region }}
+      db_connection: ${{ github.event.inputs.db_connection }}
+      loki_url: ${{ github.event.inputs.loki_url }}
+
+  deploy:
+    needs: [gcloud-setup, update-config, build-api]
+    uses: ./.github/workflows/07_deploy_cloud_run.yml
+    with:
+      service_name: garat-api
+      image: ${{ secrets.DOCKER_HUB_USERNAME }}/garat-api:${{ needs.checkout.outputs.version }}
+      gcp_project: ${{ github.event.inputs.gcp_project }}
+      gcp_region: ${{ github.event.inputs.gcp_region }}
+      allow_unauth: ${{ github.event.inputs.allow_unauth }}
+    secrets:
+      GCP_SA_KEY: ${{ secrets.GCP_SA_KEY }}

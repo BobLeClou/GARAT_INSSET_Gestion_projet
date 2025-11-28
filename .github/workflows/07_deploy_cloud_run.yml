@@ -1,0 +1,37 @@
+name: Deploy to Cloud Run
+
+on:
+  workflow_call:
+    inputs:
+      service_name:
+        required: true
+      image:
+        required: true
+      gcp_project:
+        required: true
+      gcp_region:
+        required: true
+      allow_unauth:
+        required: false
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Authenticate to GCP
+        uses: google-github-actions/auth@v1
+        with:
+          credentials_json: ${{ secrets.GCP_SA_KEY }}
+
+      - name: Deploy to Cloud Run
+        run: |
+          gcloud config set project "${{ inputs.gcp_project }}"
+          gcloud run deploy "${{ inputs.service_name }}" \
+            --image "${{ inputs.image }}" \
+            --region "${{ inputs.gcp_region }}" \
+            --platform managed \
+            --quiet
+          if [ "${{ inputs.allow_unauth }}" = "true" ]; then
+            gcloud run services add-iam-policy-binding "${{ inputs.service_name }}" \
+              --member="allUsers" --role="roles/run.invoker" --region "${{ inputs.gcp_region }}" --project "${{ inputs.gcp_project }}"
+          fi

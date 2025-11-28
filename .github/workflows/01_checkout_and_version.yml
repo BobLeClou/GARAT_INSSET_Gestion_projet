@@ -1,0 +1,28 @@
+name: Checkout and Version
+
+on:
+  workflow_call:
+    inputs:
+      version:
+        required: false
+
+jobs:
+  set-version:
+    runs-on: ubuntu-latest
+    outputs:
+      version: ${{ steps.set.outputs.version }}
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - id: set
+        name: Set version
+        run: |
+          if [ -n "${{ inputs.version }}" ]; then
+            echo "version=${{ inputs.version }}" >> "$GITHUB_OUTPUT"
+          else
+            # github.ref_name is the short ref (tag name on tag push)
+            echo "version=${{ github.ref_name }}" >> "$GITHUB_OUTPUT"
+          fi

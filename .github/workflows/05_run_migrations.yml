@@ -1,0 +1,30 @@
+name: Run DB Migrations
+
+on:
+  workflow_call:
+    inputs:
+      version:
+        required: true
+      db_connection:
+        required: false
+
+jobs:
+  migrate:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Build migrations image (if present)
+        run: |
+          if [ -f migrations/Dockerfile ]; then
+            docker build -f migrations/Dockerfile -t migrations-image:${{ inputs.version }} migrations
+          else
+            echo "No migrations/Dockerfile found — skipping build"
+          fi
+
+      - name: Run migrations (placeholder)
+        run: |
+          echo "This step should run DB migrations using Cloud SQL Proxy or gcloud sql connect."
+          echo "Received db_connection='${{ inputs.db_connection }}'"
+          # Implement your actual migration commands here.
