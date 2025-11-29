@@ -3,59 +3,149 @@ name: Main CI/CD Pipeline
 on:
   push:
     tags:
-      - 'v*.*.*'  # Déclenche seulement sur les tags versions, ex v1.0.0
+      - 'v*.*.*'  # Déclenche la workflow uniquement sur les tags version
+
+env:
+  # Variables globales (à adapter ou compléter)
+  IMAGE_API_NAME: "api"
+  IMAGE_FLUENTBIT_NAME: "fluentbit"
 
 jobs:
-  checkout_version:
-    uses: ./.github/workflows/01_checkout_and_version.yml
 
+  # Étape 1 : Checkout et récupération de la version depuis le tag Git
+  checkout_version:
+    runs-on: ubuntu-latest
+    outputs:
+      version: ${{ steps.extract_version.outputs.version }}
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Extract version from tag
+        id: extract_version
+        run: |
+          echo "VERSION=${GITHUB_REF#refs/tags/v}" >> $GITHUB_ENV
+          echo "version=${GITHUB_REF#refs/tags/v}" >> $GITHUB_OUTPUT
+
+  # Étape 2 : Build et push de l'image API Docker sur Docker Hub
   build_api:
     needs: checkout_version
-    uses: ./.github/workflows/02_build_api.yml
-    with:
-      version: ${{ needs.checkout_version.outputs.version }}
-      docker_username: ${{ secrets.DOCKER_HUB_USERNAME }}
-      docker_password: ${{ secrets.DOCKER_HUB_ACCESS_TOKEN }}
+    runs-on: ubuntu-latest
 
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Build Docker image API
+        run: |
+          docker build -t ${{ secrets.DOCKER_HUB_USERNAME }}/${{ env.IMAGE_API_NAME }}:${{ needs.checkout_version.outputs.version }} .
+          docker tag ${{ secrets.DOCKER_HUB_USERNAME }}/${{ env.IMAGE_API_NAME }}:${{ needs.checkout_version.outputs.version }} ${{ secrets.DOCKER_HUB_USERNAME }}/${{ env.IMAGE_API_NAME }}:latest
+
+      - name: Login Docker Hub
+        run: echo "${{ secrets.DOCKER_HUB_ACCESS_TOKEN }}" | docker login --username ${{ secrets.DOCKER_HUB_USERNAME }} --password-stdin
+
+      - name: Push Docker API images
+        run: |
+          docker push ${{ secrets.DOCKER_HUB_USERNAME }}/${{ env.IMAGE_API_NAME }}:${{ needs.checkout_version.outputs.version }}
+          docker push ${{ secrets.DOCKER_HUB_USERNAME }}/${{ env.IMAGE_API_NAME }}:latest
+
+  # Étape 3 : Build et push de l'image Fluent Bit
   build_fluentbit:
     needs: checkout_version
-    uses: ./.github/workflows/03_build_fluentbit.yml
-    with:
-      version: ${{ needs.checkout_version.outputs.version }}
-      docker_username: ${{ secrets.DOCKER_HUB_USERNAME }}
-      docker_password: ${{ secrets.DOCKER_HUB_ACCESS_TOKEN }}
+    runs-on: ubuntu-latest
 
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Build Docker image Fluent Bit
+        run: |
+          docker build -f Dockerfile_fluentbit -t ${{ secrets.DOCKER_HUB_USERNAME }}/${{ env.IMAGE_FLUENTBIT_NAME }}:${{ needs.checkout_version.outputs.version }} .
+          docker tag ${{ secrets.DOCKER_HUB_USERNAME }}/${{ env.IMAGE_FLUENTBIT_NAME }}:${{ needs.checkout_version.outputs.version }} ${{ secrets.DOCKER_HUB_USERNAME }}/${{ env.IMAGE_FLUENTBIT_NAME }}:latest
+
+      - name: Login Docker Hub
+        run: echo "${{ secrets.DOCKER_HUB_ACCESS_TOKEN }}" | docker login --username ${{ secrets.DOCKER_HUB_USERNAME }} --password-stdin
+
+      - name: Push Docker Fluent Bit images
+        run: |
+          docker push ${{ secrets.DOCKER_HUB_USERNAME }}/${{ env.IMAGE_FLUENTBIT_NAME }}:${{ needs.checkout_version.outputs.version }}
+          docker push ${{ secrets.DOCKER_HUB_USERNAME }}/${{ env.IMAGE_FLUENTBIT_NAME }}:latest
+
+  # Étape 4 : Configuration Google Cloud CLI et authentification
   gcloud_setup:
     needs: build_api
-    uses: ./.github/workflows/04_gcloud_setup.yml
-    with:
-      gcp_sa_key: ${{ secrets.GCP_SA_KEY }}
-      gcp_project_id: ${{ secrets.GCP_PROJECT_ID }}
-      gcp_region: ${{ secrets.GCP_REGION }}
+    runs-on: ubuntu-latest
 
+    steps:
+      - name: Install Google Cloud SDK
+        uses: google-github-actions/setup-gcloud@v1
+        with:
+          project_id: ${{ secrets.GCP_PROJECT_ID }}
+          service_account_key: ${{ secrets.GCP_SA_KEY }}
+          export_default_credentials: true
+
+      - name: Configure gcloud region
+        run: gcloud config set run/region ${{ secrets.GCP_REGION }}
+
+  # Étape 5 : Exécution des migrations de base de données via Docker
   run_migrations:
     needs: gcloud_setup
-    uses: ./.github/workflows/05_run_migrations.yml
-    with:
-      version: ${{ needs.checkout_version.outputs.version }}
-      cloud_sql_connection_name: ${{ secrets.CLOUD_SQL_CONNECTION_NAME }}
-      db_user: ${{ secrets.DB_USER }}
-      db_password: ${{ secrets.DB_PASSWORD }}
+    runs-on: ubuntu-latest
 
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Build Docker image for migrations
+        run: |
+          docker build -f Dockerfile.migrations -t migrations:${{ needs.checkout_version.outputs.version }} .
+
+      - name: Run migrations with Cloud SQL Proxy
+        env:
+          DB_USER: ${{ secrets.DB_USER }}
+          DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
+          CLOUD_SQL_CONNECTION_NAME: ${{ secrets.CLOUD_SQL_CONNECTION_NAME }}
+        run: |
+          # Lance cloud_sql_proxy en arrière-plan
+          ./cloud_sql_proxy -instances=${CLOUD_SQL_CONNECTION_NAME}=tcp:5432 &
+          sleep 5
+          # Exécute la migration (adapter la commande selon ton script)
+          docker run --rm -e DB_USER="${DB_USER}" -e DB_PASSWORD="${DB_PASSWORD}" migrations:${{ needs.checkout_version.outputs.version }} migrate
+
+  # Étape 6 : Mise à jour du fichier cloud-run-service.yaml avec les bonnes valeurs
   update_cloud_run_config:
     needs: run_migrations
-    uses: ./.github/workflows/06_update_cloud_run_config.yml
-    with:
-      version: ${{ needs.checkout_version.outputs.version }}
-      docker_username: ${{ secrets.DOCKER_HUB_USERNAME }}
-      gcp_project_id: ${{ secrets.GCP_PROJECT_ID }}
-      gcp_region: ${{ secrets.GCP_REGION }}
-      db_connection_string: ${{ secrets.DB_CONNECTION_STRING }}
-      loki_url: ${{ secrets.LOKI_URL }}
+    runs-on: ubuntu-latest
 
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Replace placeholders in cloud-run-service.yaml
+        run: |
+          sed -i "s/{{VERSION}}/${{ needs.checkout_version.outputs.version }}/g" cloud-run-service.yaml
+          sed -i "s/{{DOCKER_USERNAME}}/${{ secrets.DOCKER_HUB_USERNAME }}/g" cloud-run-service.yaml
+          sed -i "s/{{GCP_PROJECT_ID}}/${{ secrets.GCP_PROJECT_ID }}/g" cloud-run-service.yaml
+          sed -i "s/{{GCP_REGION}}/${{ secrets.GCP_REGION }}/g" cloud-run-service.yaml
+          sed -i "s#{{DB_CONNECTION_STRING}}#${{ secrets.DB_CONNECTION_STRING }}#g" cloud-run-service.yaml
+          sed -i "s#{{LOKI_URL}}#${{ secrets.LOKI_URL }}#g" cloud-run-service.yaml
+
+  # Étape 7 : Déploiement Cloud Run avec la configuration mise à jour
   deploy_cloud_run:
     needs: update_cloud_run_config
-    uses: ./.github/workflows/07_deploy_cloud_run.yml
-    with:
-      gcp_project_id: ${{ secrets.GCP_PROJECT_ID }}
-      gcp_region: ${{ secrets.GCP_REGION }}
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Install Google Cloud SDK
+        uses: google-github-actions/setup-gcloud@v1
+        with:
+          project_id: ${{ secrets.GCP_PROJECT_ID }}
+          service_account_key: ${{ secrets.GCP_SA_KEY }}
+          export_default_credentials: true
+
+      - name: Deploy Cloud Run service
+        run: |
+          gcloud run services replace cloud-run-service.yaml
+          SERVICE_NAME=$(yq e '.metadata.name' cloud-run-service.yaml)
+          gcloud run services add-iam-policy-binding "$SERVICE_NAME" --member="allUsers" --role="roles/run.invoker" || echo "Policy binding may already exist"
