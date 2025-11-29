@@ -1,85 +1,61 @@
-name: CI/CD main orchestrator
+name: Main CI/CD Pipeline
 
 on:
   push:
     tags:
-      - '*'
-  workflow_dispatch:
-    inputs:
-      version:
-        required: false
-      gcp_project:
-        required: false
-      gcp_region:
-        required: false
-      db_connection:
-        required: false
-      loki_url:
-        required: false
-      allow_unauth:
-        required: false
+      - 'v*.*.*'  # Déclenche seulement sur les tags versions, ex v1.0.0
 
 jobs:
-  checkout:
+  checkout_version:
     uses: ./.github/workflows/01_checkout_and_version.yml
-    with:
-      version: ${{ github.event.inputs.version }}
 
-  build-api:
-    needs: [checkout]
+  build_api:
+    needs: checkout_version
     uses: ./.github/workflows/02_build_api.yml
     with:
-      version: ${{ needs.checkout.outputs.version }}
-    secrets:
-      DOCKER_HUB_USERNAME: ${{ secrets.DOCKER_HUB_USERNAME }}
-      DOCKER_HUB_ACCESS_TOKEN: ${{ secrets.DOCKER_HUB_ACCESS_TOKEN }}
+      version: ${{ needs.checkout_version.outputs.version }}
+      docker_username: ${{ secrets.DOCKER_HUB_USERNAME }}
+      docker_password: ${{ secrets.DOCKER_HUB_ACCESS_TOKEN }}
 
-  build-fluent:
-    needs: [checkout]
+  build_fluentbit:
+    needs: checkout_version
     uses: ./.github/workflows/03_build_fluentbit.yml
     with:
-      version: ${{ needs.checkout.outputs.version }}
-    secrets:
-      DOCKER_HUB_USERNAME: ${{ secrets.DOCKER_HUB_USERNAME }}
-      DOCKER_HUB_ACCESS_TOKEN: ${{ secrets.DOCKER_HUB_ACCESS_TOKEN }}
+      version: ${{ needs.checkout_version.outputs.version }}
+      docker_username: ${{ secrets.DOCKER_HUB_USERNAME }}
+      docker_password: ${{ secrets.DOCKER_HUB_ACCESS_TOKEN }}
 
-  gcloud-setup:
-    needs: [checkout]
+  gcloud_setup:
+    needs: build_api
     uses: ./.github/workflows/04_gcloud_setup.yml
     with:
-      gcp_project: ${{ github.event.inputs.gcp_project }}
-      gcp_region: ${{ github.event.inputs.gcp_region }}
-    secrets:
-      GCP_SA_KEY: ${{ secrets.GCP_SA_KEY }}
+      gcp_sa_key: ${{ secrets.GCP_SA_KEY }}
+      gcp_project_id: ${{ secrets.GCP_PROJECT_ID }}
+      gcp_region: ${{ secrets.GCP_REGION }}
 
-  run-migrations:
-    needs: [gcloud-setup, checkout]
+  run_migrations:
+    needs: gcloud_setup
     uses: ./.github/workflows/05_run_migrations.yml
     with:
-      version: ${{ needs.checkout.outputs.version }}
-      db_connection: ${{ github.event.inputs.db_connection }}
-    secrets:
-      GCP_SA_KEY: ${{ secrets.GCP_SA_KEY }}
+      version: ${{ needs.checkout_version.outputs.version }}
+      cloud_sql_connection_name: ${{ secrets.CLOUD_SQL_CONNECTION_NAME }}
+      db_user: ${{ secrets.DB_USER }}
+      db_password: ${{ secrets.DB_PASSWORD }}
 
-  update-config:
-    needs: [checkout]
+  update_cloud_run_config:
+    needs: run_migrations
     uses: ./.github/workflows/06_update_cloud_run_config.yml
     with:
-      version: ${{ needs.checkout.outputs.version }}
-      docker_user: ${{ secrets.DOCKER_HUB_USERNAME }}
-      gcp_project: ${{ github.event.inputs.gcp_project }}
-      gcp_region: ${{ github.event.inputs.gcp_region }}
-      db_connection: ${{ github.event.inputs.db_connection }}
-      loki_url: ${{ github.event.inputs.loki_url }}
+      version: ${{ needs.checkout_version.outputs.version }}
+      docker_username: ${{ secrets.DOCKER_HUB_USERNAME }}
+      gcp_project_id: ${{ secrets.GCP_PROJECT_ID }}
+      gcp_region: ${{ secrets.GCP_REGION }}
+      db_connection_string: ${{ secrets.DB_CONNECTION_STRING }}
+      loki_url: ${{ secrets.LOKI_URL }}
 
-  deploy:
-    needs: [gcloud-setup, update-config, build-api]
+  deploy_cloud_run:
+    needs: update_cloud_run_config
     uses: ./.github/workflows/07_deploy_cloud_run.yml
     with:
-      service_name: garat-api
-      image: ${{ secrets.DOCKER_HUB_USERNAME }}/garat-api:${{ needs.checkout.outputs.version }}
-      gcp_project: ${{ github.event.inputs.gcp_project }}
-      gcp_region: ${{ github.event.inputs.gcp_region }}
-      allow_unauth: ${{ github.event.inputs.allow_unauth }}
-    secrets:
-      GCP_SA_KEY: ${{ secrets.GCP_SA_KEY }}
+      gcp_project_id: ${{ secrets.GCP_PROJECT_ID }}
+      gcp_region: ${{ secrets.GCP_REGION }}

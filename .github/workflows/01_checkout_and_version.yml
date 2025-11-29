@@ -2,27 +2,21 @@ name: Checkout and Version
 
 on:
   workflow_call:
-    inputs:
-      version:
-        required: false
 
 jobs:
-  set-version:
+  checkout:
     runs-on: ubuntu-latest
-    outputs:
-      version: ${{ steps.set.outputs.version }}
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
 
-      - id: set
-        name: Set version
-        run: |
-          if [ -n "${{ inputs.version }}" ]; then
-            echo "version=${{ inputs.version }}" >> "$GITHUB_OUTPUT"
-          else
-            # github.ref_name is the short ref (tag name on tag push)
-            echo "version=${{ github.ref_name }}" >> "$GITHUB_OUTPUT"
-          fi
+    outputs:
+      version: ${{ steps.get_version.outputs.version }}
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v3
+
+    - name: Get version from Git tag
+      id: get_version
+      run: |
+        # Extrait la version depuis le tag (exemple v1.2.3 -> 1.2.3)
+        VERSION="${GITHUB_REF#refs/tags/v}"
+        echo "version=$VERSION" >> $GITHUB_OUTPUT
