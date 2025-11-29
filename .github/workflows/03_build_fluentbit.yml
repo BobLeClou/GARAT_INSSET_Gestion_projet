@@ -1,26 +1,35 @@
-name: Build & Push Fluent Bit image
+name: Build Fluent Bit
 
 on:
   workflow_call:
+    inputs:
+      version:
+        required: true
+        type: string
+      docker_username:
+        required: true
+        type: string
+      docker_password:
+        required: true
+        type: string
 
 jobs:
-  build-fluent:
+  build_fluentbit:
     runs-on: ubuntu-latest
+
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
+      - name: Checkout code
+        uses: actions/checkout@v3
 
-      - name: Log in to Docker Hub
-        uses: docker/login-action@v2
-        with:
-          username: ${{ secrets.DOCKER_HUB_USERNAME }}
-          password: ${{ secrets.DOCKER_HUB_ACCESS_TOKEN }}
-
-      - name: Build and push Fluent Bit image (if Dockerfile exists)
+      - name: Build Fluent Bit Docker image
         run: |
-          if [ -f fluent-bit/Dockerfile ]; then
-            docker build -t ${{ secrets.DOCKER_HUB_USERNAME }}/garat-fluentbit:${{ inputs.version }} fluent-bit
-            docker push ${{ secrets.DOCKER_HUB_USERNAME }}/garat-fluentbit:${{ inputs.version }}
-          else
-            echo "No fluent-bit/Dockerfile found — skipping Fluent Bit image build"
-          fi
+          docker build -f Dockerfile_fluentbit -t ${{ inputs.docker_username }}/fluentbit:${{ inputs.version }} .
+          docker tag ${{ inputs.docker_username }}/fluentbit:${{ inputs.version }} ${{ inputs.docker_username }}/fluentbit:latest
+
+      - name: Login to Docker Hub
+        run: echo "${{ inputs.docker_password }}" | docker login --username "${{ inputs.docker_username }}" --password-stdin
+
+      - name: Push Fluent Bit images
+        run: |
+          docker push ${{ inputs.docker_username }}/fluentbit:${{ inputs.version }}
+          docker push ${{ inputs.docker_username }}/fluentbit:latest

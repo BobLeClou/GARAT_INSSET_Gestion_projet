@@ -1,36 +1,47 @@
-name: Update Cloud Run config
+name: Update Cloud Run Config
 
 on:
   workflow_call:
+    inputs:
+      version:
+        required: true
+        type: string
+      docker_username:
+        required: true
+        type: string
+      gcp_project_id:
+        required: true
+        type: string
+      gcp_region:
+        required: true
+        type: string
+      db_connection_string:
+        required: true
+        type: string
+      loki_url:
+        required: true
+        type: string
 
 jobs:
-  render:
+  update_config:
     runs-on: ubuntu-latest
-    outputs:
-      config-path: ${{ steps.render.outputs.path }}
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
 
-      - name: Prepare cloud-run-service.yaml
-        id: render
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v3
+
+      - name: Replace placeholders in cloud-run-service.yaml
         run: |
-          TEMPLATE=cloud-run-service.yaml.template
-          OUT=cloud-run-service.generated.yaml
-          if [ ! -f "$TEMPLATE" ]; then
-            if [ -f cloud-run-service.yaml ]; then
-              cp cloud-run-service.yaml "$OUT"
-            else
-              echo "No cloud-run-service template found; creating minimal placeholder" > "$OUT"
-              echo "service: garat-api" >> "$OUT"
-            fi
-          else
-            cp "$TEMPLATE" "$OUT"
-          fi
-          sed -i "s|\${{VERSION}}|${{ inputs.version }}|g" "$OUT" || true
-          sed -i "s|\${{DOCKER_USER}}|${{ inputs.docker_user }}|g" "$OUT" || true
-          sed -i "s|\${{GCP_PROJECT}}|${{ inputs.gcp_project }}|g" "$OUT" || true
-          sed -i "s|\${{GCP_REGION}}|${{ inputs.gcp_region }}|g" "$OUT" || true
-          sed -i "s|\${{DB_CONNECTION}}|${{ inputs.db_connection }}|g" "$OUT" || true
-          sed -i "s|\${{LOKI_URL}}|${{ inputs.loki_url }}|g" "$OUT" || true
-          echo "path=$OUT" >> "$GITHUB_OUTPUT"
+          sed -i "s/{{VERSION}}/${{ inputs.version }}/g" cloud-run-service.yaml
+          sed -i "s/{{DOCKER_USERNAME}}/${{ inputs.docker_username }}/g" cloud-run-service.yaml
+          sed -i "s/{{GCP_PROJECT_ID}}/${{ inputs.gcp_project_id }}/g" cloud-run-service.yaml
+          sed -i "s/{{GCP_REGION}}/${{ inputs.gcp_region }}/g" cloud-run-service.yaml
+          sed -i "s#{{DB_CONNECTION_STRING}}#${{ inputs.db_connection_string }}#g" cloud-run-service.yaml
+          sed -i "s#{{LOKI_URL}}#${{ inputs.loki_url }}#g" cloud-run-service.yaml
+
+      - name: Commit updated config (optional)
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add cloud-run-service.yaml
+          git commit -m "Update cloud-run-service.yaml with latest version and config" || echo "No changes to commit"
