@@ -3,7 +3,7 @@ name: Main CI/CD Pipeline
 on:
   push:
     tags:
-      - 'v*.*.*'  # Déclenche la workflow uniquement sur les tags version
+      - '*'  # Déclenche la workflow uniquement sur les tags version
 
 env:
   # Variables globales (à adapter ou compléter)
