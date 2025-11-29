@@ -3,7 +3,7 @@ name: Main CI/CD Pipeline
 on:
   push:
     tags:
-      - 'v*.*.*'  # Déclenche seulement sur les tags versions, ex v1.0.0
+      - '*'  # Déclenche seulement sur les tags versions, ex v1.0.0
 
 jobs:
   checkout_version:
