@@ -33,17 +33,17 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v3
-
       - name: Login to Docker Hub
         run: echo "${{ secrets.DOCKER_HUB_ACCESS_TOKEN }}" | docker login --username ${{ secrets.DOCKER_HUB_USERNAME }} --password-stdin
 
-      - name: Build Fluent Bit image
+      - name: Pull official Fluent Bit image
         run: |
-          docker build -f Dockerfile_fluentbit -t ${{ secrets.DOCKER_HUB_USERNAME }}/${{ env.IMAGE_FLUENTBIT_NAME }}:${{ env.VERSION }} .
-          docker tag ${{ secrets.DOCKER_HUB_USERNAME }}/${{ env.IMAGE_FLUENTBIT_NAME }}:${{ env.VERSION }} ${{ secrets.DOCKER_HUB_USERNAME }}/${{ env.IMAGE_FLUENTBIT_NAME }}:latest
+          docker pull fluent/fluent-bit:2.1
 
-      - name: Push Fluent Bit images
+      - name: Retag and push Fluent Bit to Docker Hub
         run: |
+          docker tag fluent/fluent-bit:2.1 ${{ secrets.DOCKER_HUB_USERNAME }}/${{ env.IMAGE_FLUENTBIT_NAME }}:${{ env.VERSION }}
+          docker tag fluent/fluent-bit:2.1 ${{ secrets.DOCKER_HUB_USERNAME }}/${{ env.IMAGE_FLUENTBIT_NAME }}:latest
           docker push ${{ secrets.DOCKER_HUB_USERNAME }}/${{ env.IMAGE_FLUENTBIT_NAME }}:${{ env.VERSION }}
           docker push ${{ secrets.DOCKER_HUB_USERNAME }}/${{ env.IMAGE_FLUENTBIT_NAME }}:latest
 
