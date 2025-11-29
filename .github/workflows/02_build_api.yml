@@ -2,9 +2,6 @@ name: Build & Push API image
 
 on:
   workflow_call:
-    inputs:
-      version:
-        required: true
 
 jobs:
   build:

@@ -2,19 +2,6 @@ name: Update Cloud Run config
 
 on:
   workflow_call:
-    inputs:
-      version:
-        required: true
-      docker_user:
-        required: true
-      gcp_project:
-        required: true
-      gcp_region:
-        required: true
-      db_connection:
-        required: false
-      loki_url:
-        required: false
 
 jobs:
   render:

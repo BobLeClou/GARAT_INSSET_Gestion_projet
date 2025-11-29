@@ -2,11 +2,6 @@ name: GCloud Setup
 
 on:
   workflow_call:
-    inputs:
-      gcp_project:
-        required: false
-      gcp_region:
-        required: false
 
 jobs:
   auth:

@@ -2,17 +2,6 @@ name: Deploy to Cloud Run
 
 on:
   workflow_call:
-    inputs:
-      service_name:
-        required: true
-      image:
-        required: true
-      gcp_project:
-        required: true
-      gcp_region:
-        required: true
-      allow_unauth:
-        required: false
 
 jobs:
   deploy:

@@ -2,11 +2,6 @@ name: Run DB Migrations
 
 on:
   workflow_call:
-    inputs:
-      version:
-        required: true
-      db_connection:
-        required: false
 
 jobs:
   migrate:
