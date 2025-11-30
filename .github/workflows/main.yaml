@@ -85,6 +85,13 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v3
 
+      - name: Install Google Cloud SDK (for this job)
+        uses: google-github-actions/setup-gcloud@v1
+        with:
+          project_id: ${{ secrets.GCP_PROJECT_ID }}
+          service_account_key: ${{ secrets.GCP_SA_KEY }}
+          export_default_credentials: true
+
       - name: Download Cloud SQL Proxy
         run: |
           curl -fSsLO "https://dl.google.com/cloudsql/cloud_sql_proxy.linux.amd64"
