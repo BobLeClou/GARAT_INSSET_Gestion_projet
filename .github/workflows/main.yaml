@@ -14,6 +14,12 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v3
 
+      - name: Write GCP service account key to file (for this job)
+        run: |
+          printf '%s' "${{ secrets.GCP_SA_KEY }}" > ./gcloud-service-key.json
+          chmod 600 ./gcloud-service-key.json
+          echo "GOOGLE_APPLICATION_CREDENTIALS=$(pwd)/gcloud-service-key.json" >> $GITHUB_ENV
+
       - name: Write GCP service account key to file
         run: |
           printf '%s' "${{ secrets.GCP_SA_KEY }}" > ./gcloud-service-key.json
