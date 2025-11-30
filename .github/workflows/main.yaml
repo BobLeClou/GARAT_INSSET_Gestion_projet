@@ -68,19 +68,29 @@ jobs:
       DB_USER: ${{ secrets.DB_USER }}
       DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
       CLOUD_SQL_CONNECTION_NAME: ${{ secrets.CLOUD_SQL_CONNECTION_NAME }}
+      DB_NAME: ${{ secrets.DB_NAME }}
     steps:
       - name: Checkout repository
         uses: actions/checkout@v3
 
-      - name: Build migrations image
+      - name: Download Cloud SQL Proxy
         run: |
-          docker build -f Dockerfile.migrations -t migrations:${{ env.VERSION }} .
+          curl -fSsLO "https://dl.google.com/cloudsql/cloud_sql_proxy.linux.amd64"
+          chmod +x cloud_sql_proxy
 
-      - name: Run migrations with Cloud SQL Proxy
+      - name: Install MySQL client
         run: |
-          ./cloud_sql_proxy -instances=${CLOUD_SQL_CONNECTION_NAME}=tcp:5432 &
+          sudo apt-get update
+          sudo apt-get install -y default-mysql-client
+
+      - name: Start Cloud SQL Proxy and run SQL script
+        run: |
+          # Use 3306 for MariaDB/MySQL
+          ./cloud_sql_proxy -instances=${CLOUD_SQL_CONNECTION_NAME}=tcp:3306 &
           sleep 5
-          docker run --rm -e DB_USER="${DB_USER}" -e DB_PASSWORD="${DB_PASSWORD}" migrations:${{ env.VERSION }} migrate
+          DB_NAME=${DB_NAME:-cruddemo}
+          echo "Using DB_NAME=${DB_NAME}"
+          mysql -h 127.0.0.1 -P 3306 -u"${DB_USER}" -p"${DB_PASSWORD}" "${DB_NAME}" < v1_CREATE_USER_DB.sql
 
   update_cloud_run_config:
     needs: run_migrations
