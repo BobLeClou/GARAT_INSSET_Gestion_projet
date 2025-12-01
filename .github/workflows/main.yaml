@@ -109,31 +109,23 @@ jobs:
           ./cloud-sql-proxy.linux.amd64 --unix-socket=/tmp/cloudsql ${CLOUD_SQL_CONNECTION_NAME} &
           sleep 15
           echo "Using DB_NAME=${DB_NAME}"
-          mysql -S /tmp/cloudsql/${CLOUD_SQL_CONNECTION_NAME} -u"${DB_USER}" -p"${DB_PASSWORD}" "${DB_NAME}" < v1_CREATE_USER_DB.sql
+          mysql -S /tmp/cloudsql/${CLOUD_SQL_CONNECTION_NAME} -u"${DB_USER}" -p"${DB_PASSWORD}" "${DB_NAME}" < v1_CREATE_USER_DB.sql  
 
-  update_cloud_run_config:
+  deploy_cloud_run:
     needs: run_migrations
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
         uses: actions/checkout@v3
 
-      - name: Prepare cloud-run-service.yaml
-        run: |
-          envsubst < cloud-run-service.yaml.template > cloud-run-service.yaml
+      - name: Generate cloud-run-service.yaml from template
         env:
           VERSION: ${{ env.VERSION }}
           DOCKER_USERNAME: ${{ secrets.DOCKER_HUB_USERNAME }}
           DB_CONNECTION_STRING: ${{ secrets.DB_CONNECTION_STRING }}
           LOKI_URL: ${{ secrets.LOKI_URL }}
-
-
-  deploy_cloud_run:
-    needs: update_cloud_run_config
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v3
+        run: |
+          envsubst < cloud-run-service.yaml.template > cloud-run-service.yaml
 
       - name: Authenticate to Google Cloud
         uses: google-github-actions/auth@v2
