@@ -125,6 +125,7 @@ jobs:
           VERSION=${VERSION}
           SERVICE_NAME="api-${VERSION}"
           echo "Replacing service on Cloud Run: $SERVICE_NAME"
+          echo "GCP_REGION is '${GCP_REGION}'"
 
           gcloud run services replace cloud-run-service.yaml --region=${GCP_REGION} --platform=managed
 
