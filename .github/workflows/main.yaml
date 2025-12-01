@@ -16,7 +16,7 @@ jobs:
 
       - name: Write GCP service account key to file
         run: |
-          printf '%s' "${{ secrets.GCP_SA_KEY }}" > ./gcloud-service-key.json
+          echo "${{ secrets.GCP_SA_KEY }}" | sed 's/\\n/\n/g' > gcloud-service-key.json
           chmod 600 ./gcloud-service-key.json
           cat gcloud-service-key.json
           echo "GOOGLE_APPLICATION_CREDENTIALS=$(pwd)/gcloud-service-key.json" >> $GITHUB_ENV
