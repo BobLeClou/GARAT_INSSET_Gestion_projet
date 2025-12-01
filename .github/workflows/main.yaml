@@ -27,20 +27,26 @@ jobs:
       run: | 
         gcloud auth configure-docker
 
+    - name: Sanitize image name
+      run: |
+        # Remove newlines/tabs that may be present in the secret
+        IMAGE_NAME_CLEAN=$(echo -n "$IMAGE_NAME" | tr -d '\r\n\t')
+        echo "IMAGE_NAME_CLEAN=$IMAGE_NAME_CLEAN" >> $GITHUB_ENV
+
     - name: Build Docker image
       run: |
-        docker build -t gcr.io/${{ secrets.GCP_PROJECT_ID }}/api:1.0.0 .
+        docker build -t "${IMAGE_NAME_CLEAN}:${IMAGE_TAG}" .
 
     - name: Push Docker image to GCR
       run: |
-        docker push gcr.io/${{ secrets.GCP_PROJECT_ID }}/api:1.0.0
+        docker push "${IMAGE_NAME_CLEAN}:${IMAGE_TAG}"
 
     - name: Setup variables and generate deployment file
       run: |
         VERSION=$IMAGE_TAG
         DB_CONN="mysql://${{ secrets.DB_USER }}:${{ secrets.DB_PASSWORD }}@/$(echo ${{ secrets.DB_NAME }})?unix_socket=/cloudsql/${{ secrets.CLOUD_SQL_CONNECTION_NAME }}"
         sed -e "s|\${VERSION}|$VERSION|g" \
-            -e "s|\${DOCKER_USERNAME}|$IMAGE_NAME|g" \
+            -e "s|\${DOCKER_USERNAME}|$IMAGE_NAME_CLEAN|g" \
             -e "s|\${DB_CONNECTION_STRING}|$DB_CONN|g" \
             -e "s|\${LOKI_URL}|${{ secrets.LOKI_URL }}|g" \
             cloud-run-service.yaml.template > cloud-run-service.yaml
