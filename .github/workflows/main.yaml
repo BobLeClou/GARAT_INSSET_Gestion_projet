@@ -125,6 +125,8 @@ jobs:
           DB_CONNECTION_STRING: ${{ secrets.DB_CONNECTION_STRING }}
           LOKI_URL: ${{ secrets.LOKI_URL }}
         run: |
+          CLEAN_VERSION=$(echo "${VERSION}" | tr '.' '-')
+          export CLEAN_VERSION
           envsubst < cloud-run-service.yaml.template > cloud-run-service.yaml
 
       - name: Authenticate to Google Cloud
