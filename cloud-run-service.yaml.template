@@ -1,7 +1,7 @@
 apiVersion: serving.knative.dev/v1
 kind: Service
 metadata:
-  name: api-{{VERSION}}
+  name: api-${VERSION}
   namespace: default
 spec:
   template:
@@ -11,9 +11,9 @@ spec:
         autoscaling.knative.dev/maxScale: "5"
     spec:
       containers:
-        - image: {{DOCKER_USERNAME}}/api:{{VERSION}}
+        - image: ${DOCKER_USERNAME}/api:${VERSION}
           env:
             - name: DB_CONNECTION_STRING
-              value: "{{DB_CONNECTION_STRING}}"
+              value: "${DB_CONNECTION_STRING}"
             - name: LOKI_URL
-              value: "{{LOKI_URL}}"
+              value: "${LOKI_URL}"
