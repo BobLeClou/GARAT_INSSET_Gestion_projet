@@ -105,7 +105,7 @@ jobs:
 
       - name: Start Cloud SQL Proxy and run SQL script
         run: |
-          ./cloud-sql-proxy --instances=${CLOUD_SQL_CONNECTION_NAME} --unix-socket=/tmp/cloudsql &
+          ./cloud-sql-proxy.linux.amd64 --instances=${CLOUD_SQL_CONNECTION_NAME} --unix-socket=/tmp/cloudsql &
           mysql -S /tmp/cloudsql/${CLOUD_SQL_CONNECTION_NAME} -u"${DB_USER}" -p"${DB_PASSWORD}" "${DB_NAME}" < v1_CREATE_USER_DB.sql
 
   update_cloud_run_config:
