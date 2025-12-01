@@ -1,142 +1,169 @@
-name: CI/CD - Build, Push, Deploy
+name: CD - Build & Deploy to Cloud Run
 
 on:
   push:
     tags:
       - '*'
-    branches:
-      - main
+
+env:
+  GCP_PROJECT_ID: ${{ secrets.GCP_PROJECT_ID }}
+  GCP_REGION: ${{ secrets.GCP_REGION }}
+  DOCKER_HUB_USERNAME: ${{ secrets.DOCKER_HUB_USERNAME }}
+  DOCKER_HUB_ACCESS_TOKEN: ${{ secrets.DOCKER_HUB_ACCESS_TOKEN }}
+  CLOUD_SQL_CONNECTION_NAME: ${{ secrets.CLOUD_SQL_CONNECTION_NAME }}
+  DB_NAME: ${{ secrets.DB_NAME }}
+  DB_USER: ${{ secrets.DB_USER }}
+  DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
 
 jobs:
-	build_and_deploy:
-		runs-on: ubuntu-latest
-    defaults:
-      run:
-        shell: bash
-		steps:
-			- name: Checkout repository (fetch tags)
-				uses: actions/checkout@v4
-				with:
-					fetch-depth: 0
+  build-and-deploy:
+    name: Build, Push & Deploy
+    runs-on: ubuntu-latest
 
-			- name: Extract version from Git tag
-				id: extract_version
-				run: |
-					if [[ "${GITHUB_REF}" == refs/tags/* ]]; then
-						VERSION="${GITHUB_REF#refs/tags/}"
-					else
-						VERSION=$(git describe --tags --abbrev=0 2>/dev/null || echo "latest")
-					fi
-					echo "VERSION=$VERSION" >> $GITHUB_ENV
-					echo "Version extracted: $VERSION"
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
 
-			- name: Prepare image names
-				run: |
-					echo "IMAGE_BASE=${{ secrets.DOCKER_HUB_USERNAME }}/${{ github.event.repository.name }}" >> $GITHUB_ENV
-					echo "IMAGE_API=${{ secrets.DOCKER_HUB_USERNAME }}/${{ github.event.repository.name }}:$VERSION" >> $GITHUB_ENV
-					echo "IMAGE_API_LATEST=${{ secrets.DOCKER_HUB_USERNAME }}/${{ github.event.repository.name }}:latest" >> $GITHUB_ENV
+      - name: Extract version from tag
+        id: get_version
+        run: |
+          VERSION=${GITHUB_REF#refs/tags/}
+          VERSION_LABEL=$(echo $VERSION | tr '.' '-')
+          echo "VERSION=$VERSION" >> $GITHUB_OUTPUT
+          echo "VERSION_LABEL=$VERSION_LABEL" >> $GITHUB_OUTPUT
 
-			- name: Login to Docker Hub
-				uses: docker/login-action@v2
-				with:
-					username: ${{ secrets.DOCKER_HUB_USERNAME }}
-					password: ${{ secrets.DOCKER_HUB_ACCESS_TOKEN }}
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v2
 
-			- name: Build and push API image
-				env:
-					IMAGE_API: ${{ env.IMAGE_API }}
-					IMAGE_API_LATEST: ${{ env.IMAGE_API_LATEST }}
-					VERSION: ${{ env.VERSION }}
-				run: |
-					docker build -t "$IMAGE_API" .
-					docker tag "$IMAGE_API" "$IMAGE_API_LATEST"
-					docker push "$IMAGE_API"
-					docker push "$IMAGE_API_LATEST"
+      - name: Login to Docker Hub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKER_HUB_USERNAME }}
+          password: ${{ secrets.DOCKER_HUB_ACCESS_TOKEN }}
 
-			- name: Build and push Fluent Bit image (uses repo's `fluent-bit.conf`)
-				env:
-					IMAGE_FLB: ${{ secrets.DOCKER_HUB_USERNAME }}/${{ github.event.repository.name }}-fluentbit:${{ env.VERSION }}
-				run: |
-					if [ -f fluent-bit.conf ]; then
-						cat > Dockerfile.flb <<'EOF'
-						FROM fluent/fluent-bit:2.1
-						COPY fluent-bit.conf /fluent-bit/etc/
-						EOF
-						docker build -f Dockerfile.flb -t "$IMAGE_FLB" .
-						docker push "$IMAGE_FLB"
-					else
-						echo "No fluent-bit.conf found — skipping Fluent Bit image build"
-					fi
+      - name: Build and push API image
+        run: |
+          VERSION=${{ steps.get_version.outputs.VERSION }}
+          echo "Building API image..."
+          docker build -t ${DOCKER_HUB_USERNAME}/api:$VERSION -t ${DOCKER_HUB_USERNAME}/api:latest -f Dockerfile .
+          docker push ${DOCKER_HUB_USERNAME}/api:$VERSION
+          docker push ${DOCKER_HUB_USERNAME}/api:latest
 
-			- name: Setup Google Cloud SDK
-				uses: google-github-actions/setup-gcloud@v1
-				with:
-					service_account_key: ${{ secrets.GCP_SA_KEY }}
-					project_id: ${{ secrets.GCP_PROJECT_ID }}
+      - name: Build and push Fluent Bit image
+        run: |
+          VERSION=${{ steps.get_version.outputs.VERSION }}
+          echo "Creating Dockerfile for Fluent Bit..."
+          cat > Dockerfile.fluent-bit <<'EOF'
+          FROM fluent/fluent-bit:2.0
+          COPY fluent-bit.conf /fluent-bit/etc/fluent-bit.conf
+          EOF
 
-			- name: Build and push migrations image
-				env:
-					MIG_IMG: ${{ secrets.DOCKER_HUB_USERNAME }}/${{ github.event.repository.name }}-migrations:${{ env.VERSION }}
-				run: |
-					DOCKERFILE=Dockerfile.migrations
-					if [ ! -f "$DOCKERFILE" ]; then
-						if [ -f Dockerfile ]; then
-							DOCKERFILE=Dockerfile
-						else
-							echo "No Dockerfile found for migrations, skipping" && exit 0
-						fi
-					fi
-					docker build -f "$DOCKERFILE" -t "$MIG_IMG" .
-					docker push "$MIG_IMG"
+          docker build -t ${DOCKER_HUB_USERNAME}/fluent-bit:$VERSION -t ${DOCKER_HUB_USERNAME}/fluent-bit:latest -f Dockerfile.fluent-bit .
+          docker push ${DOCKER_HUB_USERNAME}/fluent-bit:$VERSION
+          docker push ${DOCKER_HUB_USERNAME}/fluent-bit:latest
 
-			- name: Run DB migrations (optional)
-				if: ${{ secrets.MIGRATION_COMMAND != '' }}
-				env:
-					MIG_IMG: ${{ secrets.DOCKER_HUB_USERNAME }}/${{ github.event.repository.name }}-migrations:${{ env.VERSION }}
-				run: |
-					echo "Running migrations using cloud_sql_proxy and image: $MIG_IMG"
-					echo "Writing service account key"
-					echo "${{ secrets.GCP_SA_KEY }}" > gcloud-key.json
-					curl -Lo cloud_sql_proxy https://dl.google.com/cloudsql/cloud_sql_proxy.linux.amd64
-					chmod +x cloud_sql_proxy
-					./cloud_sql_proxy -instances="${{ secrets.CLOUD_SQL_CONNECTION_NAME }}"=tcp:3306 -credential_file=gcloud-key.json &
-					sleep 3
-					docker run --rm --network host \
-						-e DB_HOST=127.0.0.1 -e DB_PORT=3306 \
-						-e DB_NAME="${{ secrets.DB_NAME }}" -e DB_USER="${{ secrets.DB_USER }}" -e DB_PASSWORD="${{ secrets.DB_PASSWORD }}" \
-						$MIG_IMG sh -c "${{ secrets.MIGRATION_COMMAND }}"
+      - name: Authenticate to Google Cloud
+        uses: google-github-actions/auth@v2
+        with:
+          credentials_json: ${{ secrets.GCP_SA_KEY }}
 
-			- name: Render Cloud Run service YAML from template
-				run: |
-					if [ ! -f cloud-run-service.yaml.template ]; then
-						echo "cloud-run-service.yaml.template missing" && exit 0
-					fi
-					cp cloud-run-service.yaml.template cloud-run-service.yaml
-					sed -i "s|{{VERSION}}|${VERSION}|g" cloud-run-service.yaml || true
-					sed -i "s|{{DOCKER_USERNAME}}|${{ secrets.DOCKER_HUB_USERNAME }}|g" cloud-run-service.yaml || true
-					sed -i "s|{{GCP_PROJECT_ID}}|${{ secrets.GCP_PROJECT_ID }}|g" cloud-run-service.yaml || true
-					sed -i "s|{{GCP_REGION}}|${{ secrets.GCP_REGION }}|g" cloud-run-service.yaml || true
-					sed -i "s|{{DB_USER}}|${{ secrets.DB_USER }}|g" cloud-run-service.yaml || true
-					sed -i "s|{{DB_PASSWORD}}|${{ secrets.DB_PASSWORD }}|g" cloud-run-service.yaml || true
-					sed -i "s|{{DB_NAME}}|${{ secrets.DB_NAME }}|g" cloud-run-service.yaml || true
-					sed -i "s|{{CLOUD_SQL_CONNECTION_NAME}}|${{ secrets.CLOUD_SQL_CONNECTION_NAME }}|g" cloud-run-service.yaml || true
-					sed -i "s|{{LOKI_URL}}|${{ secrets.LOKI_URL }}|g" cloud-run-service.yaml || true
+      - name: Setup Google Cloud SDK
+        uses: google-github-actions/setup-gcloud@v2
+        with:
+          project_id: ${{ secrets.GCP_PROJECT_ID }}
 
-			- name: Deploy to Cloud Run
-				env:
-					PROJECT_ID: ${{ secrets.GCP_PROJECT_ID }}
-					REGION: ${{ secrets.GCP_REGION }}
-					IMAGE: ${{ secrets.DOCKER_HUB_USERNAME }}/${{ github.event.repository.name }}:${{ env.VERSION }}
-				run: |
-					SERVICE_NAME=$(grep -E '^\s*name:\s*' cloud-run-service.yaml | head -n1 | awk '{print $2}' || true)
-					if [ -n "$SERVICE_NAME" ]; then
-						echo "Deploying using service definition: $SERVICE_NAME"
-						gcloud run services replace cloud-run-service.yaml --project="$PROJECT_ID" --region="$REGION" || true
-					else
-						SERVICE_NAME=${{ github.event.repository.name }}
-						echo "No service name in template, deploying $SERVICE_NAME with image $IMAGE"
-						gcloud run deploy "$SERVICE_NAME" --image="$IMAGE" --region="$REGION" --project="$PROJECT_ID" --platform managed --allow-unauthenticated
-					fi
-					# Make service public
-					gcloud run services add-iam-policy-binding "$SERVICE_NAME" --member="allUsers" --role="roles/run.invoker" --region="$REGION" --project="$PROJECT_ID" || true
+      - name: Run database migrations via Cloud SQL Proxy
+        env:
+          CLOUD_SQL_CONN: ${{ secrets.CLOUD_SQL_CONNECTION_NAME }}
+          DB_NAME: ${{ secrets.DB_NAME }}
+          DB_USER: ${{ secrets.DB_USER }}
+          DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
+        run: |
+          set -e
+          echo "Downloading Cloud SQL Proxy..."
+          wget https://dl.google.com/cloudsql/cloud_sql_proxy.linux.amd64 -O cloud_sql_proxy
+          chmod +x cloud_sql_proxy
 
+          echo "Starting Cloud SQL Proxy..."
+          ./cloud_sql_proxy -instances=${CLOUD_SQL_CONN}=tcp:3306 &
+          PROXY_PID=$!
+
+          echo "Installing MySQL client..."
+          sudo apt-get update -y
+          sudo apt-get install -y default-mysql-client
+
+          echo "Waiting for proxy to be ready..."
+          sleep 8
+
+          echo "Running SQL migrations (if any)..."
+          if [ -f v1_CREATE_USER_DB.sql ]; then
+            mysql -h 127.0.0.1 -P 3306 -u"${DB_USER}" -p"${DB_PASSWORD}" "${DB_NAME}" < v1_CREATE_USER_DB.sql || true
+            echo "SQL migration executed (or no-op)."
+          else
+            echo "No SQL migration file found; skipping."
+          fi
+
+          echo "Stopping Cloud SQL Proxy"
+          kill $PROXY_PID || true
+
+      - name: Prepare Cloud Run service config
+        env:
+          VERSION: ${{ steps.get_version.outputs.VERSION }}
+          DOCKER_HUB_USERNAME: ${{ secrets.DOCKER_HUB_USERNAME }}
+          CLOUD_SQL_CONNECTION_NAME: ${{ secrets.CLOUD_SQL_CONNECTION_NAME }}
+          DB_USER: ${{ secrets.DB_USER }}
+          DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
+          DB_NAME: ${{ secrets.DB_NAME }}
+          LOKI_URL: ${{ secrets.LOKI_URL }}
+        run: |
+          VERSION=${VERSION}
+          echo "Generating cloud-run-service.yaml from template..."
+          cp cloud-run-service.yaml.template cloud-run-service.yaml
+
+          # Replace placeholders (match literal ${VAR} in template)
+          sed -i "s|\${DOCKER_USERNAME}|${DOCKER_HUB_USERNAME}|g" cloud-run-service.yaml
+          sed -i "s|\${VERSION}|${VERSION}|g" cloud-run-service.yaml
+
+          DB_CONN="mysql+pymysql://${DB_USER}:${DB_PASSWORD}@/${DB_NAME}?unix_socket=/cloudsql/${CLOUD_SQL_CONNECTION_NAME}"
+          sed -i "s|\${DB_CONNECTION_STRING}|${DB_CONN}|g" cloud-run-service.yaml
+
+          if [ -n "${LOKI_URL}" ]; then
+            sed -i "s|\${LOKI_URL}|${LOKI_URL}|g" cloud-run-service.yaml
+          else
+            sed -i "s|\${LOKI_URL}|""|g" cloud-run-service.yaml
+          fi
+
+          echo "cloud-run-service.yaml:"
+          cat cloud-run-service.yaml
+
+      - name: Deploy to Cloud Run
+        env:
+          VERSION: ${{ steps.get_version.outputs.VERSION }}
+          GCP_REGION: ${{ secrets.GCP_REGION }}
+        run: |
+          VERSION=${VERSION}
+          SERVICE_NAME="api-${VERSION}"
+          echo "Replacing service on Cloud Run: $SERVICE_NAME"
+
+          gcloud run services replace cloud-run-service.yaml --region=${GCP_REGION} --platform=managed
+
+          echo "Allowing unauthenticated invocations for $SERVICE_NAME"
+          gcloud run services add-iam-policy-binding "$SERVICE_NAME" --region=${GCP_REGION} --member="allUsers" --role="roles/run.invoker" || true
+
+          SERVICE_URL=$(gcloud run services describe "$SERVICE_NAME" --region=${GCP_REGION} --format='value(status.url)')
+          echo "SERVICE_URL=$SERVICE_URL" >> $GITHUB_OUTPUT
+          echo "Deployed: $SERVICE_URL"
+
+      - name: Health check
+        if: always()
+        run: |
+          SERVICE_URL=$(gcloud run services describe api-${{ steps.get_version.outputs.VERSION }} --region=${{ secrets.GCP_REGION }} --format='value(status.url)')
+          echo "Health-checking $SERVICE_URL"
+          sleep 8
+          HTTP_CODE=$(curl -s -o /dev/null -w "%{http_code}" ${SERVICE_URL}/health || true)
+          echo "Health endpoint returned: $HTTP_CODE"
+          if [ "$HTTP_CODE" = "200" ]; then
+            echo "Health check passed"
+          else
+            echo "Health check failed or no /health endpoint (status: $HTTP_CODE)."
+          fi
