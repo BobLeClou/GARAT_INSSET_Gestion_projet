@@ -106,10 +106,8 @@ jobs:
 
       - name: Start Cloud SQL Proxy and run SQL script
         run: |
-          ./cloud_sql_proxy --instances=${CLOUD_SQL_CONNECTION_NAME}=tcp:3306 &
-          sleep 15
-          echo "Using DB_NAME=${DB_NAME}"
-          mysql --ssl-mode=REQUIRED -h 127.0.0.1 -P 3306 -u"${DB_USER}" -p"${DB_PASSWORD}" "${DB_NAME}" < v1_CREATE_USER_DB.sql
+          ./cloud-sql-proxy --instances=${CLOUD_SQL_CONNECTION_NAME} --unix-socket=/tmp/cloudsql &
+          mysql -S /tmp/cloudsql/${CLOUD_SQL_CONNECTION_NAME} -u"${DB_USER}" -p"${DB_PASSWORD}" "${DB_NAME}" < v1_CREATE_USER_DB.sql
 
   update_cloud_run_config:
     needs: run_migrations
