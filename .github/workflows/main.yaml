@@ -12,6 +12,7 @@ env:
   DB_NAME: ${{ secrets.DB_NAME }}
   DB_USER: ${{ secrets.DB_USER }}
   DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
+  VERSION: 1-0-0
 
 jobs:
   build-and-deploy:
