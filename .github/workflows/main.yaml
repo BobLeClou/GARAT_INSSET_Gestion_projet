@@ -104,9 +104,11 @@ jobs:
         run: sudo apt-get update && sudo apt-get install -y default-mysql-client
 
       - name: Start Cloud SQL Proxy and run SQL script
-        run: |
-          ./cloud-sql-proxy.linux.amd64 --instances=${CLOUD_SQL_CONNECTION_NAME} --unix-socket=/tmp/cloudsql &
-          mysql -S /tmp/cloudsql/${CLOUD_SQL_CONNECTION_NAME} -u"${DB_USER}" -p"${DB_PASSWORD}" "${DB_NAME}" < v1_CREATE_USER_DB.sql
+  run: |
+    ./cloud-sql-proxy.linux.amd64 --unix-socket=/tmp/cloudsql ${CLOUD_SQL_CONNECTION_NAME} &
+    sleep 15
+    echo "Using DB_NAME=${DB_NAME}"
+    mysql -S /tmp/cloudsql/${CLOUD_SQL_CONNECTION_NAME} -u"${DB_USER}" -p"${DB_PASSWORD}" "${DB_NAME}" < v1_CREATE_USER_DB.sql
 
   update_cloud_run_config:
     needs: run_migrations
