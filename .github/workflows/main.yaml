@@ -97,7 +97,7 @@ jobs:
 
       - name: Download Cloud SQL Proxy
         run: |
-          curl -OfsSL https://dl.google.com/cloudsql/cloud-sql-proxy.linux.amd64 -o cloud-sql-proxy
+          curl -OfsSL https://dl.google.com/cloudsql/cloud_sql_proxy.linux.amd64 -o cloud-sql-proxy
           chmod +x cloud-sql-proxy
 
       - name: Install MySQL client
