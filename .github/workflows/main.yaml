@@ -105,6 +105,7 @@ jobs:
 
       - name: Start Cloud SQL Proxy and run SQL script
         run: |
+          mkdir -p /tmp/cloudsql
           ./cloud-sql-proxy.linux.amd64 --unix-socket=/tmp/cloudsql ${CLOUD_SQL_CONNECTION_NAME} &
           sleep 15
           echo "Using DB_NAME=${DB_NAME}"
