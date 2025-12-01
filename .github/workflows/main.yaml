@@ -139,6 +139,6 @@ jobs:
 
       - name: Deploy Cloud Run service
         run: |
-          gcloud run services replace cloud-run-service.yaml
+          gcloud run services replace cloud-run-service.yaml --region europe-west1
           SERVICE_NAME=$(yq e '.metadata.name' cloud-run-service.yaml)
           gcloud run services add-iam-policy-binding "$SERVICE_NAME" --region europe-west1 --member="allUsers" --role="roles/run.invoker" || echo "Policy binding may already exist"
