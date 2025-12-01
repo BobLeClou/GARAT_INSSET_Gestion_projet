@@ -42,19 +42,6 @@ jobs:
           docker push ${{ secrets.DOCKER_HUB_USERNAME }}/api:1.0.0
           docker push ${{ secrets.DOCKER_HUB_USERNAME }}/api:latest
 
-      - name: Build and push Fluent Bit image
-        run: |
-          VERSION=${{ steps.get_version.outputs.VERSION }}
-          echo "Creating Dockerfile for Fluent Bit..."
-          cat > Dockerfile.fluent-bit <<'EOF'
-          FROM fluent/fluent-bit:2.0
-          COPY fluent-bit.conf /fluent-bit/etc/fluent-bit.conf
-          EOF
-
-          docker build -t ${DOCKER_HUB_USERNAME}/fluent-bit:$VERSION -t ${DOCKER_HUB_USERNAME}/fluent-bit:latest -f Dockerfile.fluent-bit .
-          docker push ${DOCKER_HUB_USERNAME}/fluent-bit:$VERSION
-          docker push ${DOCKER_HUB_USERNAME}/fluent-bit:latest
-
       - name: Authenticate to Google Cloud
         uses: google-github-actions/auth@v2
         with:
