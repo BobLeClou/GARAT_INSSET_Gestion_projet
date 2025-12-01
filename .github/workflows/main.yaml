@@ -25,7 +25,8 @@ jobs:
 
       - name: Login to Google Container Registry
         run: |
-          echo "${{ secrets.GCP_SA_KEY }}" | gcloud auth activate-service-account --key-file=-
+          echo "${{ secrets.GCP_SA_KEY }}" > gcloud-service-key.json
+          gcloud auth activate-service-account --key-file=gcloud-service-key.json
           gcloud auth configure-docker
 
       - name: Build and tag API image
