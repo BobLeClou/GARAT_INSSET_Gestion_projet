@@ -98,8 +98,7 @@ jobs:
       - name: Download Cloud SQL Proxy
         run: |
           curl -fSsLO "https://storage.googleapis.com/cloud-sql-connectors/cloud-sql-proxy/v2.19.0/cloud-sql-proxy.linux.amd64"
-          mv cloud-sql-proxy.linux.amd64 cloud_sql_proxy
-          chmod +x cloud_sql_proxy
+          chmod +x cloud-sql-proxy.linux.amd64
 
       - name: Install MySQL client
         run: sudo apt-get update && sudo apt-get install -y default-mysql-client
