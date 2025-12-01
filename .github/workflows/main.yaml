@@ -14,30 +14,24 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v3
 
-      - name: Write GCP service account key to file (for this job)
-        run: |
-          printf '%s' "${{ secrets.GCP_SA_KEY }}" > ./gcloud-service-key.json
-          chmod 600 ./gcloud-service-key.json
-          echo "GOOGLE_APPLICATION_CREDENTIALS=$(pwd)/gcloud-service-key.json" >> $GITHUB_ENV
+      - name: Authenticate to Google Cloud
+        uses: google-github-actions/auth@v2
+        with:
+          credentials_json: ${{ secrets.GCP_SA_KEY }}
 
-      - name: Write GCP service account key to file
+      - name: Set up Docker config for Google Artifact Registry
         run: |
-          printf '%s' "${{ secrets.GCP_SA_KEY }}" > ./gcloud-service-key.json
-          chmod 600 ./gcloud-service-key.json
-          echo "GOOGLE_APPLICATION_CREDENTIALS=$(pwd)/gcloud-service-key.json" >> $GITHUB_ENV
+          gcloud auth configure-docker mirror.gcr.io
 
-      - name: Login to Docker Hub
-        run: echo "${{ secrets.DOCKER_HUB_ACCESS_TOKEN }}" | docker login --username ${{ secrets.DOCKER_HUB_USERNAME }} --password-stdin
-
-      - name: Build API image
+      - name: Build Docker image
         run: |
-          docker build -t ${{ secrets.DOCKER_HUB_USERNAME }}/${{ env.IMAGE_API_NAME }}:${{ env.VERSION }} .
-          docker tag ${{ secrets.DOCKER_HUB_USERNAME }}/${{ env.IMAGE_API_NAME }}:${{ env.VERSION }} ${{ secrets.DOCKER_HUB_USERNAME }}/${{ env.IMAGE_API_NAME }}:latest
+          docker build -t mirror.gcr.io/${{ secrets.GCP_PROJECT_ID }}/api:${{ env.VERSION }} .
+          docker tag mirror.gcr.io/${{ secrets.GCP_PROJECT_ID }}/api:${{ env.VERSION }} mirror.gcr.io/${{ secrets.GCP_PROJECT_ID }}/api:latest
 
-      - name: Push API images
+      - name: Push Docker images
         run: |
-          docker push ${{ secrets.DOCKER_HUB_USERNAME }}/${{ env.IMAGE_API_NAME }}:${{ env.VERSION }}
-          docker push ${{ secrets.DOCKER_HUB_USERNAME }}/${{ env.IMAGE_API_NAME }}:latest
+          docker push mirror.gcr.io/${{ secrets.GCP_PROJECT_ID }}/api:${{ env.VERSION }}
+          docker push mirror.gcr.io/${{ secrets.GCP_PROJECT_ID }}/api:latest
 
   build_and_push_fluentbit:
     needs: build_and_push_api
