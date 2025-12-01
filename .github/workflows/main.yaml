@@ -54,7 +54,7 @@ jobs:
           docker push eu.gcr.io/${{ secrets.GCP_PROJECT_ID }}/${{ env.IMAGE_FLUENTBIT_NAME }}:latest
 
   gcloud_setup:
-    needs: build_and_push_fluentbit
+    needs: build_and_push_images
     runs-on: ubuntu-latest
     steps:
       - name: Install Google Cloud SDK
