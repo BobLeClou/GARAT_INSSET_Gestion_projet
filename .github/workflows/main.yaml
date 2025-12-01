@@ -7,6 +7,8 @@ on:
 
 env:
   IMAGE_NAME: "gcr.io/${{ secrets.GCP_PROJECT_ID }}/api"
+  REPO_NAME: "artifact-repo"
+  REGISTRY_LOCATION: "europe-west1"
   IMAGE_TAG: "1.0.0"
 
 jobs:
@@ -23,21 +25,32 @@ jobs:
         service_account_key: ${{ secrets.GCP_SA_KEY }}
         project_id: ${{ secrets.GCP_PROJECT_ID }}
 
-    - name: Configure Docker for GCR
-      run: | 
-        gcloud auth configure-docker
-
-    - name: Sanitize image name
+    - name: Configure Docker for GCR and Artifact Registry
       run: |
-        # Remove newlines/tabs that may be present in the secret
-        IMAGE_NAME_CLEAN=$(echo -n "$IMAGE_NAME" | tr -d '\r\n\t')
+        # Configure docker auth for both gcr and Artifact Registry location
+        gcloud auth configure-docker --quiet
+        gcloud auth configure-docker --quiet ${REGISTRY_LOCATION}-docker.pkg.dev
+
+    - name: Ensure Artifact Registry repository exists
+      run: |
+        REPO=${{ env.REPO_NAME }}
+        LOCATION=${{ env.REGISTRY_LOCATION }}
+        echo "Checking Artifact Registry repository '$REPO' in location '$LOCATION'"
+        gcloud artifacts repositories describe "$REPO" --location="$LOCATION" || \
+          gcloud artifacts repositories create "$REPO" --repository-format=docker --location="$LOCATION" --description="Docker repo for CI"
+
+    - name: Set Artifact Registry image name and sanitize
+      run: |
+        IMAGE_NAME_ARTIFACT="${{ env.REGISTRY_LOCATION }}-docker.pkg.dev/${{ secrets.GCP_PROJECT_ID }}/${{ env.REPO_NAME }}/api"
+        IMAGE_NAME_CLEAN=$(echo -n "$IMAGE_NAME_ARTIFACT" | tr -d '\r\n\t ')
         echo "IMAGE_NAME_CLEAN=$IMAGE_NAME_CLEAN" >> $GITHUB_ENV
+        echo "Using image: $IMAGE_NAME_CLEAN:${IMAGE_TAG}"
 
     - name: Build Docker image
       run: |
         docker build -t "${IMAGE_NAME_CLEAN}:${IMAGE_TAG}" .
 
-    - name: Push Docker image to GCR
+    - name: Push Docker image to Artifact Registry
       run: |
         docker push "${IMAGE_NAME_CLEAN}:${IMAGE_TAG}"
 
