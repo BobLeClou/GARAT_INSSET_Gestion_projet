@@ -1,9 +1,11 @@
 name: CI/CD - Build, Push, Deploy
 
 on:
-	push:
-		tags: ['*']
-		branches: [ main ]
+  push:
+    tags:
+      - '*'
+    branches:
+      - main
 
 jobs:
 	build_and_deploy:
