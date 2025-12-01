@@ -10,9 +10,9 @@ on:
 jobs:
 	build_and_deploy:
 		runs-on: ubuntu-latest
-		defaults:
-			run:
-				shell: bash
+    defaults:
+      run:
+        shell: bash
 		steps:
 			- name: Checkout repository (fetch tags)
 				uses: actions/checkout@v4
