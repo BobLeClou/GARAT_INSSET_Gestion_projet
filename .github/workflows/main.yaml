@@ -126,7 +126,7 @@ jobs:
           LOKI_URL: ${{ secrets.LOKI_URL }}
         run: |
           CLEAN_VERSION=$(echo "${VERSION}" | tr '.' '-')
-          export CLEAN_VERSION
+          export VERSION=${CLEAN_VERSION}
           envsubst < cloud-run-service.yaml.template > cloud-run-service.yaml
 
       - name: Authenticate to Google Cloud
