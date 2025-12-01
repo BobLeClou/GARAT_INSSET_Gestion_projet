@@ -118,14 +118,17 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v3
 
-      - name: Replace placeholders in cloud-run-service.yaml
+      - name: Prepare cloud-run-service.yaml
         run: |
-          sed -i "s/{{VERSION}}/${{ env.VERSION }}/g" cloud-run-service.yaml
-          sed -i "s/{{DOCKER_USERNAME}}/${{ secrets.DOCKER_HUB_USERNAME }}/g" cloud-run-service.yaml
-          sed -i "s/{{GCP_PROJECT_ID}}/${{ secrets.GCP_PROJECT_ID }}/g" cloud-run-service.yaml
-          sed -i "s/{{GCP_REGION}}/${{ secrets.GCP_REGION }}/g" cloud-run-service.yaml
-          sed -i "s#{{DB_CONNECTION_STRING}}#${{ secrets.DB_CONNECTION_STRING }}#g" cloud-run-service.yaml
-          sed -i "s#{{LOKI_URL}}#${{ secrets.LOKI_URL }}#g" cloud-run-service.yaml
+          envsubst < cloud-run-service.yaml.template > cloud-run-service.yaml
+        env:
+          VERSION: ${{ env.VERSION }}
+          DOCKER_USERNAME: ${{ secrets.DOCKER_HUB_USERNAME }}
+          GCP_PROJECT_ID: ${{ secrets.GCP_PROJECT_ID }}
+          GCP_REGION: ${{ secrets.GCP_REGION }}
+          DB_CONNECTION_STRING: ${{ secrets.DB_CONNECTION_STRING }}
+          LOKI_URL: ${{ secrets.LOKI_URL }}
+
 
   deploy_cloud_run:
     needs: update_cloud_run_config
