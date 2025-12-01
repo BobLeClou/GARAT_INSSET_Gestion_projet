@@ -97,15 +97,16 @@ jobs:
 
       - name: Download Cloud SQL Proxy
         run: |
-          curl -OfsSL https://dl.google.com/cloudsql/cloud_sql_proxy.linux.amd64 -o cloud-sql-proxy
-          chmod +x cloud-sql-proxy
+          curl -fSsLO "https://dl.google.com/cloudsql/cloud_sql_proxy.linux.amd64"
+          mv cloud_sql_proxy.linux.amd64 cloud_sql_proxy
+          chmod +x cloud_sql_proxy
 
       - name: Install MySQL client
         run: sudo apt-get update && sudo apt-get install -y default-mysql-client
 
       - name: Start Cloud SQL Proxy and run SQL script
         run: |
-          ./cloud-sql-proxy -instances=${CLOUD_SQL_CONNECTION_NAME}=tcp:3306 &
+          ./cloud_sql_proxy -instances=${CLOUD_SQL_CONNECTION_NAME}=tcp:3306 &
           sleep 5
           echo "Using DB_NAME=${DB_NAME}"
           mysql --ssl-mode=REQUIRED -h 127.0.0.1 -P 3306 -u"${DB_USER}" -p"${DB_PASSWORD}" "${DB_NAME}" < v1_CREATE_USER_DB.sql
